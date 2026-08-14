@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dar El Kahwa — Café à La Marsa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coffee-950:#160f0a;
+  --coffee-900:#241609;
+  --coffee-800:#3a2415;
+  --coffee-700:#523320;
+  --coffee-600:#6e4a2e;
+  --gold:#c9a034;
+  --gold-light:#e6cd8a;
+  --gold-dim:#8f7228;
+  --cream:#f8f3e8;
+  --cream-dim:#efe6d2;
+  --ink:#241a12;
+  --ink-soft:#5a4a3a;
+  --success:#5c7a52;
+  --danger:#a8432f;
+  --line: rgba(201,160,52,0.28);
+  --radius:2px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:'Manrope',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:'Fraunces',serif;
+  font-weight:500;
+  margin:0;
+  color:var(--ink);
+  letter-spacing:-0.01em;
+}
+p{margin:0;line-height:1.7;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+.eyebrow{
+  font-family:'Manrope',sans-serif;
+  font-size:0.72rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--gold-dim);
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.eyebrow::before{content:"";width:22px;height:1px;background:var(--gold);}
+
+/* ---------- Signature arabesque divider ---------- */
+.motif-divider{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin:0 auto;
+  padding:2px 0;
+  opacity:0.85;
+}
+.motif-divider .line{flex:1;max-width:120px;height:1px;background:linear-gradient(90deg, transparent, var(--gold), transparent);}
+.motif-divider svg{flex-shrink:0;}
+
+/* ---------- Layout helpers ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+.section{padding:120px 0;}
+.section-head{text-align:center;max-width:640px;margin:0 auto 64px;}
+.section-head h2{font-size:clamp(2.1rem,4vw,3rem);margin-top:16px;}
+.section-head p{margin-top:18px;color:var(--ink-soft);font-size:1.05rem;}
+
+/* ---------- Reveal on scroll ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.9s ease, transform 0.9s ease;}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+
+/* ---------- Header ---------- */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:22px 0;
+  transition:background 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease;
+}
+header .wrap{display:flex;align-items:center;justify-content:space-between;}
+header.scrolled{
+  background:rgba(22,15,10,0.94);
+  backdrop-filter:blur(10px);
+  padding:14px 0;
+  box-shadow:0 8px 30px rgba(0,0,0,0.25);
+}
+.logo{display:flex;align-items:center;gap:10px;color:var(--cream);}
+.logo-mark{width:34px;height:34px;flex-shrink:0;}
+.logo-text{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:600;letter-spacing:0.01em;}
+.logo-text span{color:var(--gold-light);font-style:italic;font-weight:400;}
+nav{display:flex;align-items:center;gap:34px;}
+nav a.navlink{
+  color:var(--cream-dim);font-size:0.85rem;font-weight:600;letter-spacing:0.03em;
+  position:relative;padding:4px 0;cursor:pointer;
+}
+nav a.navlink::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--gold);transition:width 0.3s ease;}
+nav a.navlink:hover::after{width:100%;}
+nav a.navlink:hover{color:var(--cream);}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 26px;
+  font-size:0.82rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+  border:1px solid var(--gold);
+  border-radius:var(--radius);
+  transition:all 0.35s ease;
+}
+.btn-gold{background:var(--gold);color:var(--coffee-950);}
+.btn-gold:hover{background:transparent;color:var(--gold-light);}
+.btn-outline{background:transparent;color:var(--cream);border-color:rgba(230,205,138,0.5);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold-light);}
+.btn-dark{border-color:var(--coffee-900);color:var(--coffee-950);}
+.btn-dark:hover{background:var(--coffee-950);color:var(--cream);}
+.lang-switch{display:flex;gap:2px;margin-left:8px;}
+.lang-switch button{
+  background:transparent;border:1px solid rgba(230,205,138,0.35);color:var(--cream-dim);
+  font-size:0.68rem;font-weight:700;padding:5px 8px;letter-spacing:0.05em;
+}
+.lang-switch button.active{background:var(--gold);color:var(--coffee-950);border-color:var(--gold);}
+.burger{display:none;background:none;border:none;color:var(--cream);font-size:1.6rem;}
+
+/* ---------- Hero ---------- */
+.hero{
+  position:relative;min-height:100vh;display:flex;align-items:center;
+  background:linear-gradient(180deg, rgba(22,15,10,0.55), rgba(22,15,10,0.82)), url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1800&q=70') center/cover no-repeat;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 20%, rgba(201,160,52,0.12), transparent 55%);
+  pointer-events:none;
+}
+.hero .wrap{position:relative;z-index:2;padding-top:90px;}
+.hero-eyebrow{color:var(--gold-light);}
+.hero-eyebrow::before{background:var(--gold-light);}
+.hero h1{
+  color:var(--cream);
+  font-size:clamp(3rem,7vw,5.6rem);
+  line-height:1.02;
+  margin-top:24px;
+  max-width:820px;
+}
+.hero h1 em{color:var(--gold-light);font-style:italic;font-weight:400;}
+.hero p.lead{
+  color:var(--cream-dim);max-width:480px;margin-top:26px;font-size:1.12rem;line-height:1.7;
+}
+.hero-ctas{display:flex;gap:16px;margin-top:44px;flex-wrap:wrap;}
+.hero-scroll{
+  position:absolute;bottom:38px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--cream-dim);
+  font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;
+}
+.hero-scroll .stem{width:1px;height:38px;background:linear-gradient(180deg,var(--gold),transparent);animation:scrollpulse 2.2s ease-in-out infinite;}
+@keyframes scrollpulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
+
+/* ---------- Menu ---------- */
+.menu-tabs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:56px;}
+.menu-tab{
+  padding:10px 22px;border:1px solid var(--line);border-radius:30px;
+  font-size:0.8rem;font-weight:700;letter-spacing:0.03em;color:var(--ink-soft);
+  background:transparent;transition:all 0.3s ease;
+}
+.menu-tab.active,.menu-tab:hover{background:var(--coffee-950);border-color:var(--coffee-950);color:var(--cream);}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:34px;}
+.menu-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  transition:transform 0.4s ease, box-shadow 0.4s ease;
+}
+.menu-card:hover{transform:translateY(-6px);box-shadow:0 24px 44px rgba(36,22,9,0.16);}
+.menu-card .img{height:190px;overflow:hidden;position:relative;}
+.menu-card .img img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;}
+.menu-card:hover .img img{transform:scale(1.07);}
+.menu-card .unavailable-tag{
+  position:absolute;top:12px;left:12px;background:var(--danger);color:#fff;font-size:0.65rem;
+  letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:20px;font-weight:700;
+}
+.menu-card .body{padding:22px 22px 24px;}
+.menu-card .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.menu-card h4{font-size:1.18rem;}
+.menu-card .price{color:var(--gold-dim);font-weight:700;font-family:'Fraunces',serif;font-size:1.1rem;white-space:nowrap;}
+.menu-card .desc{margin-top:10px;color:var(--ink-soft);font-size:0.92rem;}
+.empty-note{text-align:center;color:var(--ink-soft);padding:40px 0;grid-column:1/-1;}
+
+/* ---------- About ---------- */
+.about{background:var(--coffee-950);color:var(--cream);position:relative;overflow:hidden;}
+.about::after{
+  content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;
+  border:1px solid rgba(201,160,52,0.15);border-radius:50%;
+}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;}
+.about-media{position:relative;}
+.about-media img{border-radius:var(--radius);width:100%;height:520px;object-fit:cover;}
+.about-media .frame{position:absolute;inset:22px -22px -22px 22px;border:1px solid var(--gold);z-index:-1;}
+.about-text .eyebrow{color:var(--gold-light);}
+.about-text .eyebrow::before{background:var(--gold-light);}
+.about-text h2{color:var(--cream);font-size:clamp(2rem,3.6vw,2.7rem);margin-top:18px;}
+.about-text p{color:var(--cream-dim);margin-top:22px;font-size:1.03rem;}
+.about-stats{display:flex;gap:42px;margin-top:40px;}
+.about-stats .stat b{display:block;font-family:'Fraunces',serif;font-size:2.1rem;color:var(--gold-light);}
+.about-stats .stat span{font-size:0.75rem;letter-spacing:0.05em;color:var(--cream-dim);text-transform:uppercase;}
+
+/* ---------- Gallery ---------- */
+.gallery-grid{
+  columns:4 260px;column-gap:20px;
+}
+.gallery-item{
+  break-inside:avoid;margin-bottom:20px;border-radius:var(--radius);overflow:hidden;cursor:pointer;
+  position:relative;
+}
+.gallery-item img{width:100%;display:block;transition:transform 0.5s ease, filter 0.5s ease;}
+.gallery-item:hover img{transform:scale(1.05);filter:brightness(0.85);}
+.gallery-item .cap{
+  position:absolute;bottom:0;left:0;right:0;padding:16px;
+  background:linear-gradient(0deg, rgba(22,15,10,0.85), transparent);
+  color:var(--cream);font-size:0.82rem;opacity:0;transition:opacity 0.3s ease;
+}
+.gallery-item:hover .cap{opacity:1;}
+.lightbox{
+  position:fixed;inset:0;background:rgba(15,10,6,0.94);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:40px;
+}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:88vw;max-height:82vh;border-radius:2px;}
+.lightbox .close{position:absolute;top:28px;right:38px;color:var(--cream);font-size:2rem;background:none;border:none;}
+.lightbox .cap{color:var(--cream-dim);text-align:center;margin-top:16px;position:static;background:none;opacity:1;}
+
+/* ---------- Testimonials ---------- */
+.testi-section{background:var(--cream-dim);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;}
+.testi-card{background:#fff;padding:34px 30px;border:1px solid var(--line);border-radius:var(--radius);}
+.testi-stars{color:var(--gold);font-size:0.95rem;letter-spacing:2px;}
+.testi-card p{margin-top:16px;color:var(--ink-soft);font-style:italic;font-size:0.98rem;}
+.testi-who{display:flex;align-items:center;gap:12px;margin-top:22px;}
+.testi-avatar{width:42px;height:42px;border-radius:50%;background:var(--coffee-800);color:var(--gold-light);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;}
+.testi-name{font-weight:700;font-size:0.9rem;}
+.testi-loc{font-size:0.78rem;color:var(--ink-soft);}
+
+/* ---------- Reservation ---------- */
+.reserve{background:var(--coffee-950);color:var(--cream);position:relative;}
+.reserve-grid{display:grid;grid-template-columns:0.85fr 1.15fr;gap:0;background:var(--coffee-900);border:1px solid rgba(201,160,52,0.2);border-radius:var(--radius);overflow:hidden;}
+.reserve-info{padding:56px 48px;background:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=70') center/cover;position:relative;}
+.reserve-info::before{content:"";position:absolute;inset:0;background:rgba(22,15,10,0.72);}
+.reserve-info > *{position:relative;z-index:1;}
+.reserve-info h3{color:var(--cream);font-size:1.7rem;margin-top:14px;}
+.reserve-info p{color:var(--cream-dim);margin-top:16px;}
+.reserve-info .hours{margin-top:28px;font-size:0.9rem;color:var(--cream-dim);}
+.reserve-info .hours div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(201,160,52,0.15);}
+.reserve-form{padding:56px 48px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.field{margin-bottom:20px;}
+.field label{display:block;font-size:0.75rem;letter-spacing:0.05em;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px;font-weight:700;}
+.field input,.field select,.field textarea{
+  width:100%;background:rgba(248,243,232,0.06);border:1px solid rgba(230,205,138,0.28);
+  color:var(--cream);padding:13px 14px;font-family:inherit;font-size:0.95rem;border-radius:var(--radius);
+  outline:none;transition:border-color 0.3s ease;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(248,243,232,0.35);}
+.field select option{color:#000;}
+.form-msg{margin-top:18px;padding:14px 16px;border-radius:2px;font-size:0.88rem;display:none;}
+.form-msg.ok{display:block;background:rgba(92,122,82,0.18);border:1px solid var(--success);color:#bfe0b4;}
+.form-msg.err{display:block;background:rgba(168,67,47,0.18);border:1px solid var(--danger);color:#f0b5a8;}
+
+/* ---------- Contact ---------- */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.contact-info-list{display:flex;flex-direction:column;gap:26px;margin-top:30px;}
+.ci-item{display:flex;gap:16px;}
+.ci-icon{width:42px;height:42px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold-dim);flex-shrink:0;}
+.ci-item h4{font-size:1rem;}
+.ci-item p{color:var(--ink-soft);margin-top:4px;font-size:0.92rem;}
+.social-row{display:flex;gap:14px;margin-top:30px;}
+.social-row a{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);transition:all 0.3s ease;}
+.social-row a:hover{background:var(--coffee-950);color:var(--gold-light);border-color:var(--coffee-950);}
+.map-embed{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);height:280px;margin-top:34px;}
+.map-embed iframe{width:100%;height:100%;border:0;}
+.contact-form .field input,.contact-form .field textarea{
+  background:#fff;border:1px solid var(--line);color:var(--ink);
+}
+.contact-form .field input::placeholder,.contact-form .field textarea::placeholder{color:#a99c88;}
+.contact-form .field label{color:var(--gold-dim);}
+
+/* ---------- Footer ---------- */
+footer{background:var(--coffee-950);color:var(--cream-dim);padding:70px 0 26px;}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:50px;border-bottom:1px solid rgba(201,160,52,0.15);}
+.footer-grid h5{color:var(--gold-light);font-family:'Manrope',sans-serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:18px;font-weight:700;}
+.footer-grid a{display:block;color:var(--cream-dim);font-size:0.9rem;margin-bottom:10px;transition:color 0.3s ease;}
+.footer-grid a:hover{color:var(--gold-light);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;font-size:0.78rem;color:rgba(248,243,232,0.4);flex-wrap:wrap;gap:10px;}
+.footer-bottom a{color:rgba(248,243,232,0.4);}
+.footer-bottom a:hover{color:var(--gold-light);}
+
+/* ---------- Admin ---------- */
+#admin-root{display:none;min-height:100vh;background:var(--cream);}
+.admin-login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--coffee-950);}
+.admin-login-card{background:var(--coffee-900);border:1px solid rgba(201,160,52,0.25);padding:52px 46px;width:100%;max-width:400px;border-radius:2px;}
+.admin-login-card h2{color:var(--cream);font-size:1.7rem;}
+.admin-login-card p.sub{color:var(--cream-dim);margin-top:10px;font-size:0.9rem;}
+.admin-hint{margin-top:22px;padding:12px 14px;background:rgba(201,160,52,0.08);border:1px dashed rgba(201,160,52,0.35);font-size:0.78rem;color:var(--gold-light);border-radius:2px;}
+.admin-shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
+.admin-sidebar{background:var(--coffee-950);color:var(--cream);padding:32px 22px;position:sticky;top:0;height:100vh;}
+.admin-sidebar .logo-text{font-size:1.1rem;}
+.admin-nav{margin-top:44px;display:flex;flex-direction:column;gap:4px;}
+.admin-nav button{
+  text-align:left;background:none;border:none;color:var(--cream-dim);padding:12px 14px;font-size:0.88rem;
+  font-weight:600;border-radius:2px;transition:all 0.25s ease;display:flex;align-items:center;gap:10px;
+}
+.admin-nav button:hover{background:rgba(201,160,52,0.08);color:var(--cream);}
+.admin-nav button.active{background:var(--gold);color:var(--coffee-950);}
+.admin-logout{margin-top:auto;padding-top:30px;}
+.admin-logout button{background:none;border:1px solid rgba(230,205,138,0.3);color:var(--cream-dim);padding:10px 14px;font-size:0.8rem;border-radius:2px;width:100%;}
+.admin-logout button:hover{border-color:var(--gold);color:var(--gold-light);}
+.admin-main{padding:44px 48px;overflow-x:auto;}
+.admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;}
+.admin-topbar h2{font-size:1.7rem;}
+.view-site-link{font-size:0.82rem;font-weight:700;color:var(--gold-dim);border-bottom:1px solid var(--gold-dim);padding-bottom:2px;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:44px;}
+.stat-card{background:#fff;border:1px solid var(--line);padding:26px;border-radius:2px;}
+.stat-card b{display:block;font-family:'Fraunces',serif;font-size:2.2rem;color:var(--coffee-900);}
+.stat-card span{font-size:0.78rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;}
+.admin-panel-box{background:#fff;border:1px solid var(--line);border-radius:2px;padding:30px;margin-bottom:30px;}
+.admin-panel-box h3{font-size:1.15rem;margin-bottom:18px;}
+table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--coffee-950);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink-soft);}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+.badge{padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;}
+.badge.pending{background:#fbe9c6;color:#8a5a00;}
+.badge.confirmed{background:#d9ead0;color:#3d6b2c;}
+.badge.cancelled{background:#f4d3cc;color:#9c3a24;}
+.badge.expired{background:#e6e0d4;color:#6b5f4d;}
+.badge.new{background:#d9e6f5;color:#2c5b8a;}
+.badge.read{background:#e5e0d5;color:#7a6f5c;}
+.icon-btn{background:none;border:1px solid var(--line);padding:6px 10px;border-radius:2px;font-size:0.78rem;margin-right:6px;color:var(--ink-soft);}
+.icon-btn:hover{border-color:var(--coffee-950);color:var(--coffee-950);}
+.icon-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
+.admin-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;}
+.admin-toolbar .tabs{display:flex;gap:8px;}
+.admin-toolbar .tabs button{padding:7px 16px;border:1px solid var(--line);background:none;border-radius:20px;font-size:0.78rem;font-weight:700;color:var(--ink-soft);}
+.admin-toolbar .tabs button.active{background:var(--coffee-950);border-color:var(--coffee-950);color:#fff;}
+.modal-bg{position:fixed;inset:0;background:rgba(22,15,10,0.55);z-index:900;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.open{display:flex;}
+.modal-box{background:#fff;padding:36px;border-radius:2px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;}
+.modal-box h3{margin-bottom:22px;}
+.admin-field{margin-bottom:16px;}
+.admin-field label{display:block;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);margin-bottom:6px;}
+.admin-field input,.admin-field select,.admin-field textarea{
+  width:100%;padding:11px 12px;border:1px solid var(--line);font-family:inherit;font-size:0.92rem;border-radius:2px;
+}
+.admin-field .check{display:flex;align-items:center;gap:8px;}
+.admin-field .check input{width:auto;}
+.modal-actions{display:flex;gap:10px;margin-top:22px;justify-content:flex-end;}
+.gallery-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;}
+.ga-item{position:relative;border-radius:2px;overflow:hidden;border:1px solid var(--line);}
+.ga-item img{height:120px;width:100%;object-fit:cover;}
+.ga-item .rm{position:absolute;top:6px;right:6px;background:rgba(22,15,10,0.75);color:#fff;border:none;width:26px;height:26px;border-radius:50%;font-size:0.9rem;}
+.empty-state{text-align:center;padding:50px 0;color:var(--ink-soft);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--coffee-950);color:#fff;padding:14px 22px;border-radius:2px;font-size:0.88rem;z-index:1200;opacity:0;transform:translateY(10px);transition:all 0.35s ease;border-left:3px solid var(--gold);}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* ---------- Responsive ---------- */
+@media(max-width:980px){
+  nav{position:fixed;top:0;right:-100%;height:100vh;width:280px;background:var(--coffee-950);flex-direction:column;justify-content:center;align-items:flex-start;padding:40px;transition:right 0.4s ease;gap:26px;}
+  nav.open{right:0;}
+  .burger{display:block;}
+  .about-grid{grid-template-columns:1fr;gap:40px;}
+  .about-media img{height:340px;}
+  .reserve-grid{grid-template-columns:1fr;}
+  .contact-grid{grid-template-columns:1fr;gap:40px;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .testi-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .admin-shell{grid-template-columns:1fr;}
+  .admin-sidebar{position:static;height:auto;}
+}
+@media(max-width:640px){
+  .section{padding:80px 0;}
+  .form-row{grid-template-columns:1fr;}
+  .gallery-grid{columns:2 160px;}
+  .reserve-info,.reserve-form{padding:36px 26px;}
+  .footer-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:1fr;}
+  .admin-main{padding:30px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ PUBLIC SITE ============================================================ -->
+<div id="public-root">
+
+<header id="site-header">
+  <div class="wrap">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="19" stroke="#c9a034" stroke-width="1"/>
+        <path d="M12 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#e6cd8a" stroke-width="1.2" fill="none"/>
+        <path d="M13 20h14v5a7 7 0 0 1-7 7 7 7 0 0 1-7-7v-5z" stroke="#e6cd8a" stroke-width="1.2" fill="none"/>
+        <path d="M27 21.5c2 0 3.4 1.6 3.4 3.4s-1.4 3.4-3.4 3.1" stroke="#e6cd8a" stroke-width="1.1" fill="none"/>
+      </svg>
+      <div class="logo-text">Dar El <span>Kahwa</span></div>
+    </div>
+    <nav id="main-nav">
+      <a class="navlink" data-target="hero">Accueil</a>
+      <a class="navlink" data-target="menu">Menu</a>
+      <a class="navlink" data-target="about">À propos</a>
+      <a class="navlink" data-target="gallery">Galerie</a>
+      <a class="navlink" data-target="contact">Contact</a>
+      <a class="navlink" id="customer-account-link">Mon compte</a>
+      <a class="btn btn-outline" data-target="reserve">Réserver une table</a>
+      <div class="lang-switch">
+        <button data-lang="fr" class="active">FR</button>
+        <button data-lang="ar">عر</button>
+        <button data-lang="en">EN</button>
+      </div>
+    </nav>
+    <button class="burger" id="burger-btn">☰</button>
+  </div>
+</header>
+
+<section class="hero" id="hero">
+  <div class="wrap">
+    <div class="eyebrow hero-eyebrow" id="hero-eyebrow" data-i18n="hero_eyebrow">La Marsa, Tunisie — depuis 2019</div>
+    <h1 data-i18n-html="hero_title">Le café, servi comme<br>une <em>invitation</em>.</h1>
+    <p class="lead" data-i18n="hero_lead">Grains torréfiés localement, pâtisseries maison et une salle pensée pour ralentir le temps — à deux pas de la corniche.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-gold" data-target="reserve" data-i18n="hero_cta1">Réserver une table</a>
+      <a class="btn btn-outline" data-target="menu" data-i18n="hero_cta2">Découvrir le menu</a>
+    </div>
+  </div>
+  <div class="hero-scroll"><span data-i18n="hero_scroll">Défiler</span><div class="stem"></div></div>
+</section>
+
+<section class="section" id="menu">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" style="justify-content:center" data-i18n="menu_eyebrow">Notre carte</div>
+      <h2 data-i18n="menu_title">Fait pour être savouré</h2>
+      <p data-i18n="menu_sub">Une sélection qui change avec les saisons — mise à jour directement par notre équipe.</p>
+    </div>
+    <div class="menu-tabs reveal" id="menu-tabs"></div>
+    <div class="menu-grid" id="menu-grid"></div>
+  </div>
+</section>
+
+<div class="motif-divider reveal">
+  <div class="line"></div>
+  <svg width="26" height="26" viewBox="0 0 26 26"><path d="M13 1L16 10L25 13L16 16L13 25L10 16L1 13L10 10Z" fill="#c9a034"/></svg>
+  <div class="line"></div>
+</div>
+
+<section class="section about" id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="about-media reveal">
+        <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=900&q=75" alt="Intérieur du café Dar El Kahwa">
+        <div class="frame"></div>
+      </div>
+      <div class="about-text reveal">
+        <div class="eyebrow" data-i18n="about_eyebrow">Notre histoire</div>
+        <h2 data-i18n="about_title">Une maison de café, pas un passage</h2>
+        <p data-i18n="about_p1">Dar El Kahwa est né d'une idée simple : recréer, à La Marsa, la lenteur des cafés qui ont vu grandir nos parents — le marc qui infuse, les voix qui se mêlent, le temps qui n'est plus compté.</p>
+        <p data-i18n="about_p2">Chaque grain est torréfié en petite quantité par un partenaire tunisien, chaque pâtisserie sort de notre cuisine le matin même. Le granit sombre et les touches dorées du décor rendent hommage à l'artisanat local, entre tradition et modernité.</p>
+        <div class="about-stats">
+          <div class="stat"><b>2019</b><span data-i18n="about_stat1">Ouverture</span></div>
+          <div class="stat"><b>12</b><span data-i18n="about_stat2">Origines de café</span></div>
+          <div class="stat"><b>4.8</b><span data-i18n="about_stat3">Note moyenne</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="motif-divider reveal">
+  <div class="line"></div>
+  <svg width="26" height="26" viewBox="0 0 26 26"><path d="M13 1L16 10L25 13L16 16L13 25L10 16L1 13L10 10Z" fill="#c9a034"/></svg>
+  <div class="line"></div>
+</div>
+
+<section class="section" id="gallery">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" style="justify-content:center" data-i18n="gallery_eyebrow">En images</div>
+      <h2 data-i18n="gallery_title">L'ambiance Dar El Kahwa</h2>
+      <p data-i18n="gallery_sub">Un aperçu de la salle, des plats et des visages qui font vivre l'endroit.</p>
+    </div>
+    <div class="gallery-grid reveal" id="gallery-grid"></div>
+  </div>
+</section>
+
+<section class="section testi-section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" style="justify-content:center" data-i18n="testi_eyebrow">Avis clients</div>
+      <h2 data-i18n="testi_title">Ce qu'on en dit</h2>
+    </div>
+    <div class="testi-grid reveal" id="testi-grid"></div>
+  </div>
+</section>
+
+<section class="section reserve" id="reserve">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" style="justify-content:center" data-i18n="reserve_eyebrow">Réservation</div>
+      <h2 style="color:var(--cream)" data-i18n="reserve_title">Gardez-nous une table</h2>
+      <p style="color:var(--cream-dim)" data-i18n="reserve_sub">Places limitées, surtout le week-end. Une réponse vous sera envoyée par téléphone.</p>
+    </div>
+    <div class="reserve-grid reveal">
+      <div class="reserve-info">
+        <div class="eyebrow" data-i18n="reserve_info_eyebrow">Bon à savoir</div>
+        <h3 data-i18n="reserve_info_title">Avant de venir</h3>
+        <p data-i18n="reserve_info_p">Pour les groupes de plus de 8 personnes, contactez-nous directement par téléphone. Les tables sont gardées 15 minutes après l'heure prévue.</p>
+        <div class="hours">
+          <div><span data-i18n="hours_1">Lun – Jeu</span><span>08:00 – 23:00</span></div>
+          <div><span data-i18n="hours_2">Ven – Sam</span><span>08:00 – 00:30</span></div>
+          <div><span data-i18n="hours_3">Dimanche</span><span>09:00 – 23:00</span></div>
+        </div>
+      </div>
+      <div class="reserve-form">
+        <form id="reservation-form">
+          <div class="form-row">
+            <div class="field"><label data-i18n="f_name">Nom complet</label><input type="text" name="name" id="res-name-input" placeholder="Ex. Ahmed Ben Salah" required></div>
+            <div class="field"><label data-i18n="f_phone">Téléphone</label><input type="tel" name="phone" id="res-phone-input" placeholder="+216 XX XXX XXX" required></div>
+          </div>
+          <div class="field"><label data-i18n="f_email">Email (utilise le même que ton compte pour la retrouver dans "Mon compte")</label><input type="email" name="email" id="res-email-input" placeholder="vous@email.com"></div>
+          <div class="form-row">
+            <div class="field"><label data-i18n="f_date">Date</label><input type="date" name="date" required></div>
+            <div class="field"><label data-i18n="f_time">Heure</label><input type="time" name="time" required></div>
+          </div>
+          <div class="field">
+            <label data-i18n="f_people">Nombre de personnes</label>
+            <select name="people" required>
+              <option value="">—</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+              <option>5</option><option>6</option><option>7</option><option>8+</option>
+            </select>
+          </div>
+          <div class="field"><label data-i18n="f_note">Note (optionnel)</label><textarea name="note" rows="2" placeholder="Anniversaire, allergie, préférence de table…"></textarea></div>
+          <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center" data-i18n="f_submit">Envoyer la demande</button>
+          <div class="form-msg" id="reserve-msg"></div>
+          <p style="text-align:center;margin-top:16px;"><a href="#" id="cancel-res-link" style="color:var(--cream-dim);font-size:0.82rem;border-bottom:1px solid rgba(230,205,138,0.3);">Besoin d'annuler une réservation existante ?</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div class="reveal">
+        <div class="eyebrow" data-i18n="contact_eyebrow">Nous trouver</div>
+        <h2 data-i18n="contact_title">Contact & adresse</h2>
+        <div class="contact-info-list">
+          <div class="ci-item">
+            <div class="ci-icon">📍</div>
+            <div><h4 data-i18n="ci_addr_title">Adresse</h4><p id="contact-address">15 Avenue Habib Bourguiba, La Marsa, Tunis, Tunisie</p></div>
+          </div>
+          <div class="ci-item">
+            <div class="ci-icon">☎</div>
+            <div><h4 data-i18n="ci_phone_title">Téléphone</h4><p id="contact-phone">+216 71 456 789</p></div>
+          </div>
+          <div class="ci-item">
+            <div class="ci-icon">✉</div>
+            <div><h4 data-i18n="ci_mail_title">Email</h4><p id="contact-email">bonjour@darelkahwa.tn</p></div>
+          </div>
+          <div class="ci-item">
+            <div class="ci-icon">🕐</div>
+            <div><h4 data-i18n="ci_hours_title">Horaires</h4><p id="contact-hours">Ouvert tous les jours, 08:00 – 23:00 (00:30 le week-end)</p></div>
+          </div>
+        </div>
+        <div class="social-row">
+          <a href="#" id="social-instagram" title="Instagram">IG</a>
+          <a href="#" id="social-facebook" title="Facebook">FB</a>
+          <a href="#" id="social-tiktok" title="TikTok">TT</a>
+        </div>
+        <div class="map-embed">
+          <iframe id="contact-map" src="https://www.google.com/maps?q=La+Marsa,+Tunisia&output=embed" loading="lazy" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="reveal contact-form">
+        <div class="eyebrow" data-i18n="contact_form_eyebrow">Une question ?</div>
+        <h2 style="margin-bottom:26px" data-i18n="contact_form_title">Écrivez-nous</h2>
+        <form id="contact-form">
+          <div class="field"><label data-i18n="f_name">Nom complet</label><input type="text" name="name" placeholder="Votre nom" required></div>
+          <div class="field"><label data-i18n="f_email">Email</label><input type="email" name="email" placeholder="vous@email.com" required></div>
+          <div class="field"><label data-i18n="f_message">Message</label><textarea name="message" rows="4" placeholder="Votre message…" required></textarea></div>
+          <button type="submit" class="btn btn-dark" style="background:var(--coffee-950);color:#fff" data-i18n="f_send">Envoyer le message</button>
+          <div class="form-msg" id="contact-msg"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom:16px;"><div class="logo-text">Dar El <span>Kahwa</span></div></div>
+        <p style="color:var(--cream-dim);font-size:0.9rem;max-width:280px;" data-i18n="footer_desc">Une maison de café à La Marsa — grains torréfiés localement, pâtisseries maison, ambiance sur mesure.</p>
+      </div>
+      <div>
+        <h5 data-i18n="footer_nav">Navigation</h5>
+        <a data-target="menu">Menu</a>
+        <a data-target="about">À propos</a>
+        <a data-target="gallery">Galerie</a>
+        <a data-target="reserve">Réserver</a>
+      </div>
+      <div>
+        <h5 data-i18n="footer_contact">Contact</h5>
+        <a href="tel:+21671456789" id="footer-phone">+216 71 456 789</a>
+        <a href="mailto:bonjour@darelkahwa.tn" id="footer-email">bonjour@darelkahwa.tn</a>
+        <a data-target="contact">Voir la carte</a>
+      </div>
+      <div>
+        <h5 data-i18n="footer_legal">Légal</h5>
+        <a href="#" data-i18n="footer_legal1">Mentions légales</a>
+        <a href="#" data-i18n="footer_legal2">Politique de confidentialité</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer_copy">© 2026 Dar El Kahwa. Tous droits réservés.</span>
+      <span data-i18n="footer_made">Site conçu avec soin à Tunis.</span>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /public-root -->
+
+<!-- ============================================================ LIGHTBOX ============================================================ -->
+<div class="lightbox" id="lightbox">
+  <button class="close" id="lightbox-close">✕</button>
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <img id="lightbox-img" src="" alt="">
+    <div class="cap" id="lightbox-cap"></div>
+  </div>
+</div>
+
+<!-- ============================================================ ADMIN ============================================================ -->
+<div id="admin-root">
+
+  <div class="admin-login" id="admin-login-view">
+    <div class="admin-login-card">
+      <div class="logo" style="color:#f8f3e8;margin-bottom:8px;">
+        <div class="logo-text">Dar El <span>Kahwa</span></div>
+      </div>
+      <h2 style="margin-top:22px;">Espace administrateur</h2>
+      <p class="sub">Connectez-vous pour gérer le menu, les réservations, la galerie et les messages.</p>
+      <form id="admin-login-form" style="margin-top:26px;">
+        <div class="field"><label>Email</label><input type="email" name="email" placeholder="admin@darelkahwa.tn" required></div>
+        <div class="field">
+          <label>Mot de passe</label>
+          <div style="position:relative;">
+            <input type="password" name="password" id="admin-pwd-input" placeholder="••••••••" required style="padding-right:70px;">
+            <button type="button" id="toggle-pwd" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:1px solid rgba(230,205,138,0.35);color:var(--gold-light);font-size:0.68rem;padding:5px 8px;border-radius:2px;">Afficher</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Se connecter</button>
+        <div class="form-msg" id="admin-login-msg"></div>
+      </form>
+      <div class="admin-hint">Compte admin géré par Supabase Auth — crée-le dans Authentication → Users → Add user (email + mot de passe), puis connecte-toi ici avec ces identifiants.</div>
+      <p style="margin-top:20px;"><a href="#" id="back-to-site" style="color:var(--cream-dim);font-size:0.82rem;border-bottom:1px solid rgba(230,205,138,0.3);">← Retour au site public</a></p>
+    </div>
+  </div>
+
+  <div class="admin-shell" id="admin-shell-view" style="display:none;">
+    <div class="admin-sidebar" style="display:flex;flex-direction:column;">
+      <div class="logo"><div class="logo-text" style="font-size:1.05rem;">Dar El <span>Kahwa</span></div></div>
+      <div class="admin-nav" id="admin-nav">
+        <button data-view="dashboard" class="active">📊 Tableau de bord</button>
+        <button data-view="menu">☕ Menu</button>
+        <button data-view="reservations">📅 Réservations</button>
+        <button data-view="gallery">🖼 Galerie</button>
+        <button data-view="messages">✉ Messages</button>
+        <button data-view="settings">⚙ Paramètres</button>
+        <button data-view="account">🔑 Mon compte</button>
+      </div>
+      <div class="admin-logout">
+        <a href="#" id="admin-view-site" style="display:block;color:var(--cream-dim);font-size:0.82rem;margin-bottom:14px;">→ Voir le site public</a>
+        <button id="admin-logout-btn">Déconnexion</button>
+      </div>
+    </div>
+    <div class="admin-main" id="admin-main"></div>
+  </div>
+
+</div><!-- /admin-root -->
+
+<div class="modal-bg" id="modal-bg"><div class="modal-box" id="modal-box"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ==================================================================
+   SUPABASE — vraie base de données en ligne (remplace window.storage)
+   ================================================================== */
+const SUPABASE_URL = 'https://nqauqewbdiksoolsjwhc.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_KM0WHrrGSoIe0GQGARpQkA_M2iPluua';
+const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const KEYS = {
+  menu: 'darelkahwa-menu-items',
+  gallery: 'darelkahwa-gallery-photos',
+  reservations: 'darelkahwa-reservations',
+  messages: 'darelkahwa-messages',
+  settings: 'darelkahwa-site-settings'
+};
+
+const DEFAULT_SETTINGS = {
+  address: '15 Avenue Habib Bourguiba, La Marsa, Tunis, Tunisie',
+  phone: '+216 71 456 789',
+  email: 'bonjour@darelkahwa.tn',
+  hours: 'Ouvert tous les jours, 08:00 – 23:00 (00:30 le week-end)',
+  mapQuery: 'La Marsa, Tunisia',
+  instagram: '', facebook: '', tiktok: ''
+};
+
+const DEFAULT_MENU = [
+  {id:'m1',category:'Cafés',name:'Espresso Dar El Kahwa',description:'Notre mélange signature, torréfaction douce, notes de noisette et de cacao.',price:4.5,image:'https://images.unsplash.com/photo-1610889556528-9a770e32642f?auto=format&fit=crop&w=600&q=75',available:true},
+  {id:'m2',category:'Cafés',name:'Cappuccino',description:'Espresso, lait vapeur onctueux, une pointe de cannelle en option.',price:6.5,image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=75',available:true},
+  {id:'m3',category:'Cafés',name:'Café Turc à la Dar',description:'Préparé au sable chaud, servi avec un loukoum maison.',price:5.0,image:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=600&q=75',available:true},
+  {id:'m4',category:'Pâtisseries',name:'Croissant beurre',description:'Feuilletage pur beurre, cuit chaque matin sur place.',price:4.0,image:'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=75',available:true},
+  {id:'m5',category:'Pâtisseries',name:'Baklawa maison',description:'Pâte filo, pistaches de Sfax, sirop au miel d\'oranger.',price:7.0,image:'https://images.unsplash.com/photo-1517705008128-361805f42e86?auto=format&fit=crop&w=600&q=75',available:true},
+  {id:'m6',category:'Pâtisseries',name:'Cheesecake au citron',description:'Base sablée, crème onctueuse, zestes de citron de Tunisie.',price:8.5,image:'https://images.unsplash.com/photo-1524351199678-941a58a3df50?auto=format&fit=crop&w=600&q=75',available:false},
+  {id:'m7',category:'Boissons froides',name:'Iced Latte Vanille',description:'Espresso glacé, lait, sirop de vanille maison.',price:8.0,image:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=600&q=75',available:true},
+  {id:'m8',category:'Boissons froides',name:'Citronnade à la menthe',description:'Citrons pressés, menthe fraîche du jardin, eau pétillante.',price:7.5,image:'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=600&q=75',available:true},
+  {id:'m9',category:'Boissons chaudes',name:'Thé à la menthe',description:'Thé vert, menthe fraîche, servi façon traditionnelle.',price:5.0,image:'https://images.unsplash.com/photo-1499638673689-79a0b5115d87?auto=format&fit=crop&w=600&q=75',available:true},
+  {id:'m10',category:'Boissons chaudes',name:'Chocolat chaud épicé',description:'Chocolat noir 70%, cannelle, pointe de piment doux.',price:7.0,image:'https://images.unsplash.com/photo-1517578239113-b03992dcdd25?auto=format&fit=crop&w=600&q=75',available:true}
+];
+
+const DEFAULT_GALLERY = [
+  {id:'g1',url:'https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=700&q=75',caption:'La salle principale'},
+  {id:'g2',url:'https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=700&q=75',caption:'Le comptoir'},
+  {id:'g3',url:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=700&q=75',caption:'Grains fraîchement torréfiés'},
+  {id:'g4',url:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=700&q=75',caption:'Latte art du jour'},
+  {id:'g5',url:'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=700&q=75',caption:'Coin lecture'},
+  {id:'g6',url:'https://images.unsplash.com/photo-1522992319-0365e5f11656?auto=format&fit=crop&w=700&q=75',caption:'Pâtisseries du matin'},
+  {id:'g7',url:'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=700&q=75',caption:'Sélection de grains'},
+  {id:'g8',url:'https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=700&q=75',caption:'Préparation en salle'}
+];
+
+const TESTIMONIALS = [
+  {name:'Amira K.',loc:'La Marsa',text:'L\'endroit parfait pour travailler l\'après-midi. Le café turc est comme chez ma grand-mère.',rating:5},
+  {name:'Karim B.',loc:'Tunis',text:'Décor magnifique, service impeccable. La baklawa maison vaut à elle seule le déplacement.',rating:5},
+  {name:'Sarra M.',loc:'Sidi Bou Saïd',text:'On y va en famille tous les dimanches. Toujours accueillant, jamais bruyant.',rating:4}
+];
+
+async function isCurrentUserAdmin(){
+  const { data: { user } } = await sbClient.auth.getUser();
+  return !!(user && user.app_metadata && user.app_metadata.role === 'admin');
+}
+async function getCurrentCustomer(){
+  const { data: { user } } = await sbClient.auth.getUser();
+  if(!user) return null;
+  if(user.app_metadata && user.app_metadata.role === 'admin') return null; // admin isn't a "customer" on the public site
+  return user;
+}
+
+/* ---- Real per-table data access (menu_items, gallery_photos, reservations, contact_messages, site_settings) ---- */
+async function getMenu(){
+  const { data, error } = await sbClient.from('menu_items').select('*').order('created_at');
+  if(error){ console.error(error); return []; }
+  return data;
+}
+async function seedMenuIfEmpty(){
+  const { count } = await sbClient.from('menu_items').select('*', {count:'exact', head:true});
+  if(!count){ await sbClient.from('menu_items').insert(DEFAULT_MENU.map(({id, ...rest})=>rest)); }
+}
+async function addMenuItem(item){ return sbClient.from('menu_items').insert(item); }
+async function updateMenuItem(id, item){ return sbClient.from('menu_items').update(item).eq('id', id); }
+async function deleteMenuItem(id){ return sbClient.from('menu_items').delete().eq('id', id); }
+
+async function getGallery(){
+  const { data, error } = await sbClient.from('gallery_photos').select('*').order('created_at');
+  if(error){ console.error(error); return []; }
+  return data;
+}
+async function seedGalleryIfEmpty(){
+  const { count } = await sbClient.from('gallery_photos').select('*', {count:'exact', head:true});
+  if(!count){ await sbClient.from('gallery_photos').insert(DEFAULT_GALLERY.map(({id, ...rest})=>rest)); }
+}
+async function addGalleryPhoto(photo){ return sbClient.from('gallery_photos').insert(photo); }
+async function deleteGalleryPhoto(id){ return sbClient.from('gallery_photos').delete().eq('id', id); }
+
+async function getSettings(){
+  const { data, error } = await sbClient.from('site_settings').select('*').eq('id', 1).maybeSingle();
+  if(error || !data) return DEFAULT_SETTINGS;
+  return {
+    address: data.address, phone: data.phone, email: data.email, hours: data.hours,
+    mapQuery: data.map_query, instagram: data.instagram, facebook: data.facebook, tiktok: data.tiktok
+  };
+}
+async function updateSettings(s){
+  return sbClient.from('site_settings').update({
+    address: s.address, phone: s.phone, email: s.email, hours: s.hours,
+    map_query: s.mapQuery, instagram: s.instagram, facebook: s.facebook, tiktok: s.tiktok
+  }).eq('id', 1);
+}
+
+async function getReservations(){
+  const { data, error } = await sbClient.from('reservations').select('*').order('created_at', {ascending:false});
+  if(error){ console.error(error); return []; }
+  return data;
+}
+async function addReservation(r){ return sbClient.from('reservations').insert(r); }
+async function updateReservationStatus(id, status){ return sbClient.from('reservations').update({status}).eq('id', id); }
+async function cancelReservationAsGuest(phone, date, time){
+  const { data, error } = await sbClient.rpc('cancel_reservation', { p_phone: phone, p_date: date, p_time: time });
+  if(error) return false;
+  return !!data;
+}
+
+async function getMessages(){
+  const { data, error } = await sbClient.from('contact_messages').select('*').order('created_at', {ascending:false});
+  if(error){ console.error(error); return []; }
+  return data;
+}
+async function addMessage(m){ return sbClient.from('contact_messages').insert(m); }
+async function updateMessageStatus(id, status){ return sbClient.from('contact_messages').update({status}).eq('id', id); }
+
+async function ensureSeed(){
+  await seedMenuIfEmpty();
+  await seedGalleryIfEmpty();
+}
+
+function uid(){ return 'id' + Math.random().toString(36).slice(2,10); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* Read a File from an <input type="file">, resize it down and compress it to JPEG
+   so it stays well under the storage size limit, and return a data: URL string
+   we can save directly as the "image"/"url" value in menu items or gallery photos. */
+function fileToCompressedDataUrl(file, maxDim = 1000, quality = 0.72){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Lecture du fichier impossible'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Image invalide'));
+      img.onload = () => {
+        let { width, height } = img;
+        if(width > maxDim || height > maxDim){
+          if(width > height){ height = Math.round(height * (maxDim / width)); width = maxDim; }
+          else { width = Math.round(width * (maxDim / height)); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ==================================================================
+   I18N — lightweight dictionary for static UI copy (FR default)
+   ================================================================== */
+const I18N = {
+  fr: {
+    hero_eyebrow:'La Marsa, Tunisie — depuis 2019',
+    hero_title:'Le café, servi comme<br>une <em>invitation</em>.',
+    hero_lead:'Grains torréfiés localement, pâtisseries maison et une salle pensée pour ralentir le temps — à deux pas de la corniche.',
+    hero_cta1:'Réserver une table', hero_cta2:'Découvrir le menu', hero_scroll:'Défiler',
+    menu_eyebrow:'Notre carte', menu_title:'Fait pour être savouré', menu_sub:'Une sélection qui change avec les saisons — mise à jour directement par notre équipe.',
+    about_eyebrow:'Notre histoire', about_title:'Une maison de café, pas un passage',
+    about_p1:"Dar El Kahwa est né d'une idée simple : recréer, à La Marsa, la lenteur des cafés qui ont vu grandir nos parents — le marc qui infuse, les voix qui se mêlent, le temps qui n'est plus compté.",
+    about_p2:"Chaque grain est torréfié en petite quantité par un partenaire tunisien, chaque pâtisserie sort de notre cuisine le matin même. Le granit sombre et les touches dorées du décor rendent hommage à l'artisanat local, entre tradition et modernité.",
+    about_stat1:'Ouverture', about_stat2:'Origines de café', about_stat3:'Note moyenne',
+    gallery_eyebrow:'En images', gallery_title:'L\'ambiance Dar El Kahwa', gallery_sub:'Un aperçu de la salle, des plats et des visages qui font vivre l\'endroit.',
+    testi_eyebrow:'Avis clients', testi_title:'Ce qu\'on en dit',
+    reserve_eyebrow:'Réservation', reserve_title:'Gardez-nous une table', reserve_sub:'Places limitées, surtout le week-end. Une réponse vous sera envoyée par téléphone.',
+    reserve_info_eyebrow:'Bon à savoir', reserve_info_title:'Avant de venir', reserve_info_p:'Pour les groupes de plus de 8 personnes, contactez-nous directement par téléphone. Les tables sont gardées 15 minutes après l\'heure prévue.',
+    hours_1:'Lun – Jeu', hours_2:'Ven – Sam', hours_3:'Dimanche',
+    f_name:'Nom complet', f_phone:'Téléphone', f_date:'Date', f_time:'Heure', f_people:'Nombre de personnes',
+    f_note:'Note (optionnel)', f_submit:'Envoyer la demande', f_email:'Email', f_message:'Message', f_send:'Envoyer le message',
+    contact_eyebrow:'Nous trouver', contact_title:'Contact & adresse',
+    ci_addr_title:'Adresse', ci_addr_val:'15 Avenue Habib Bourguiba, La Marsa, Tunis, Tunisie',
+    ci_phone_title:'Téléphone', ci_mail_title:'Email', ci_hours_title:'Horaires', ci_hours_val:'Ouvert tous les jours, 08:00 – 23:00 (00:30 le week-end)',
+    contact_form_eyebrow:'Une question ?', contact_form_title:'Écrivez-nous',
+    footer_desc:'Une maison de café à La Marsa — grains torréfiés localement, pâtisseries maison, ambiance sur mesure.',
+    footer_nav:'Navigation', footer_contact:'Contact', footer_legal:'Légal',
+    footer_legal1:'Mentions légales', footer_legal2:'Politique de confidentialité', footer_admin:'Espace admin',
+    footer_copy:'© 2026 Dar El Kahwa. Tous droits réservés.', footer_made:'Site conçu avec soin à Tunis.'
+  },
+  en: {
+    hero_eyebrow:'La Marsa, Tunisia — since 2019',
+    hero_title:'Coffee, served like<br>an <em>invitation</em>.',
+    hero_lead:'Locally roasted beans, house-made pastries, and a room designed to slow you down — just off the corniche.',
+    hero_cta1:'Book a table', hero_cta2:'See the menu', hero_scroll:'Scroll',
+    menu_eyebrow:'Our menu', menu_title:'Made to be savoured', menu_sub:'A selection that shifts with the seasons — updated directly by our team.',
+    about_eyebrow:'Our story', about_title:'A coffee house, not a stopover',
+    about_p1:"Dar El Kahwa started with a simple idea: bring back, in La Marsa, the slowness of the cafés our parents grew up in — the grounds steeping, the voices overlapping, time no longer counted.",
+    about_p2:"Every bean is roasted in small batches by a Tunisian partner, every pastry leaves our kitchen the same morning. The dark granite and gold accents pay tribute to local craft, between tradition and modernity.",
+    about_stat1:'Opened', about_stat2:'Coffee origins', about_stat3:'Average rating',
+    gallery_eyebrow:'In pictures', gallery_title:'The Dar El Kahwa mood', gallery_sub:'A glimpse of the room, the food, and the faces that bring it to life.',
+    testi_eyebrow:'Reviews', testi_title:'What people say',
+    reserve_eyebrow:'Reservation', reserve_title:'Save us a table', reserve_sub:'Limited seating, especially on weekends. We\'ll confirm by phone.',
+    reserve_info_eyebrow:'Good to know', reserve_info_title:'Before you come', reserve_info_p:'For parties over 8, please call us directly. Tables are held for 15 minutes past the booking time.',
+    hours_1:'Mon – Thu', hours_2:'Fri – Sat', hours_3:'Sunday',
+    f_name:'Full name', f_phone:'Phone', f_date:'Date', f_time:'Time', f_people:'Number of guests',
+    f_note:'Note (optional)', f_submit:'Send request', f_email:'Email', f_message:'Message', f_send:'Send message',
+    contact_eyebrow:'Find us', contact_title:'Contact & address',
+    ci_addr_title:'Address', ci_addr_val:'15 Avenue Habib Bourguiba, La Marsa, Tunis, Tunisia',
+    ci_phone_title:'Phone', ci_mail_title:'Email', ci_hours_title:'Hours', ci_hours_val:'Open daily, 08:00 – 23:00 (00:30 on weekends)',
+    contact_form_eyebrow:'A question?', contact_form_title:'Write to us',
+    footer_desc:'A coffee house in La Marsa — locally roasted beans, house-made pastries, a room built with care.',
+    footer_nav:'Navigation', footer_contact:'Contact', footer_legal:'Legal',
+    footer_legal1:'Legal notice', footer_legal2:'Privacy policy', footer_admin:'Admin area',
+    footer_copy:'© 2026 Dar El Kahwa. All rights reserved.', footer_made:'Designed with care in Tunis.'
+  },
+  ar: {
+    hero_eyebrow:'المرسى، تونس — منذ 2019',
+    hero_title:'قهوة تُقدَّم مثل<br><em>دعوة</em>.',
+    hero_lead:'حبوب محمّصة محليًا، حلويات منزلية، وقاعة صُممت لتبطئ الوقت — على بعد خطوات من الكورنيش.',
+    hero_cta1:'احجز طاولة', hero_cta2:'اكتشف القائمة', hero_scroll:'مرّر للأسفل',
+    menu_eyebrow:'قائمتنا', menu_title:'صُنعت لتُستمتع بها', menu_sub:'تشكيلة تتغيّر مع الفصول — يحدّثها فريقنا مباشرة.',
+    about_eyebrow:'قصتنا', about_title:'بيت قهوة، لا مجرد محطة عابرة',
+    about_p1:'وُلدت دار القهوة من فكرة بسيطة: إحياء بطء المقاهي التي كبر فيها آباؤنا في المرسى — القهوة تُغلى، الأصوات تتداخل، والوقت لم يعد يُحسب.',
+    about_p2:'كل حبة قهوة تُحمّص بكميات صغيرة من قبل شريك تونسي، وكل حلوى تخرج من مطبخنا في الصباح نفسه. الغرانيت الداكن ولمسات الذهب في الديكور تكريم للحرفية المحلية.',
+    about_stat1:'الافتتاح', about_stat2:'أصول القهوة', about_stat3:'متوسط التقييم',
+    gallery_eyebrow:'بالصور', gallery_title:'أجواء دار القهوة', gallery_sub:'لمحة عن القاعة والأطباق والوجوه التي تُحيي المكان.',
+    testi_eyebrow:'آراء الزبائن', testi_title:'ماذا يقولون عنا',
+    reserve_eyebrow:'الحجز', reserve_title:'احجز لنا طاولة', reserve_sub:'الأماكن محدودة، خاصة في عطلة نهاية الأسبوع. سنؤكد عبر الهاتف.',
+    reserve_info_eyebrow:'معلومة مفيدة', reserve_info_title:'قبل قدومك', reserve_info_p:'للمجموعات التي تفوق 8 أشخاص، يُرجى الاتصال بنا مباشرة. تُحجز الطاولات لمدة 15 دقيقة بعد الموعد.',
+    hours_1:'إثنين – خميس', hours_2:'جمعة – سبت', hours_3:'الأحد',
+    f_name:'الاسم الكامل', f_phone:'الهاتف', f_date:'التاريخ', f_time:'الوقت', f_people:'عدد الأشخاص',
+    f_note:'ملاحظة (اختياري)', f_submit:'إرسال الطلب', f_email:'البريد الإلكتروني', f_message:'الرسالة', f_send:'إرسال الرسالة',
+    contact_eyebrow:'موقعنا', contact_title:'التواصل والعنوان',
+    ci_addr_title:'العنوان', ci_addr_val:'15 نهج الحبيب بورقيبة، المرسى، تونس',
+    ci_phone_title:'الهاتف', ci_mail_title:'البريد الإلكتروني', ci_hours_title:'أوقات العمل', ci_hours_val:'مفتوح يوميًا، 08:00 – 23:00 (00:30 في عطلة نهاية الأسبوع)',
+    contact_form_eyebrow:'لديك سؤال؟', contact_form_title:'راسلنا',
+    footer_desc:'بيت قهوة في المرسى — حبوب محمّصة محليًا، حلويات منزلية، أجواء مصممة بعناية.',
+    footer_nav:'روابط', footer_contact:'التواصل', footer_legal:'قانوني',
+    footer_legal1:'إشعار قانوني', footer_legal2:'سياسة الخصوصية', footer_admin:'لوحة الإدارة',
+    footer_copy:'© 2026 دار القهوة. جميع الحقوق محفوظة.', footer_made:'صُمم بعناية في تونس.'
+  }
+};
+
+function applyLang(lang){
+  const dict = I18N[lang] || I18N.fr;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n');
+    if(dict[k]) el.textContent = dict[k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const k = el.getAttribute('data-i18n-html');
+    if(dict[k]) el.innerHTML = dict[k];
+  });
+  document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('.lang-switch button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+}
+
+/* ==================================================================
+   PUBLIC SITE RENDERING
+   ================================================================== */
+let currentCategory = 'Toutes';
+
+async function renderMenu(){
+  const items = await getMenu();
+  const cats = ['Toutes', ...Array.from(new Set(items.map(i=>i.category)))];
+  const tabsEl = document.getElementById('menu-tabs');
+  tabsEl.innerHTML = cats.map(c=>`<button class="menu-tab ${c===currentCategory?'active':''}" data-cat="${c}">${c}</button>`).join('');
+  tabsEl.querySelectorAll('.menu-tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ currentCategory = btn.dataset.cat; renderMenu(); });
+  });
+
+  const grid = document.getElementById('menu-grid');
+  const filtered = currentCategory === 'Toutes' ? items : items.filter(i=>i.category===currentCategory);
+  if(!filtered.length){
+    grid.innerHTML = `<div class="empty-note">Aucun produit dans cette catégorie pour le moment.</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(item=>`
+    <div class="menu-card reveal in-view">
+      <div class="img">
+        <img src="${item.image}" alt="${item.name}" loading="lazy">
+        ${!item.available ? '<div class="unavailable-tag">Épuisé</div>' : ''}
+      </div>
+      <div class="body">
+        <div class="row"><h4>${item.name}</h4><span class="price">${Number(item.price).toFixed(2)} TND</span></div>
+        <p class="desc">${item.description}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function renderGallery(){
+  const photos = await getGallery();
+  const grid = document.getElementById('gallery-grid');
+  if(!photos.length){ grid.innerHTML = '<div class="empty-note">La galerie sera bientôt disponible.</div>'; return; }
+  grid.innerHTML = photos.map(p=>`
+    <div class="gallery-item" data-url="${p.url}" data-cap="${p.caption||''}">
+      <img src="${p.url}" alt="${p.caption||''}" loading="lazy">
+      <div class="cap">${p.caption||''}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.gallery-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      document.getElementById('lightbox-img').src = el.dataset.url;
+      document.getElementById('lightbox-cap').textContent = el.dataset.cap;
+      document.getElementById('lightbox').classList.add('open');
+    });
+  });
+}
+
+function renderTestimonials(){
+  const grid = document.getElementById('testi-grid');
+  grid.innerHTML = TESTIMONIALS.map(t=>`
+    <div class="testi-card">
+      <div class="testi-stars">${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}</div>
+      <p>"${t.text}"</p>
+      <div class="testi-who">
+        <div class="testi-avatar">${t.name.charAt(0)}</div>
+        <div><div class="testi-name">${t.name}</div><div class="testi-loc">${t.loc}</div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function renderSettings(){
+  const s = await getSettings();
+  const setText = (id, val) => { const el = document.getElementById(id); if(el && val) el.textContent = val; };
+  setText('contact-address', s.address);
+  setText('contact-phone', s.phone);
+  setText('contact-email', s.email);
+  setText('contact-hours', s.hours);
+  const phoneLink = document.getElementById('footer-phone');
+  if(phoneLink && s.phone){ phoneLink.textContent = s.phone; phoneLink.href = 'tel:' + s.phone.replace(/\s+/g,''); }
+  const emailLink = document.getElementById('footer-email');
+  if(emailLink && s.email){ emailLink.textContent = s.email; emailLink.href = 'mailto:' + s.email; }
+  const mapEl = document.getElementById('contact-map');
+  if(mapEl && s.mapQuery){ mapEl.src = 'https://www.google.com/maps?q=' + encodeURIComponent(s.mapQuery) + '&output=embed'; }
+  const ig = document.getElementById('social-instagram'); if(ig && s.instagram) ig.href = s.instagram;
+  const fb = document.getElementById('social-facebook'); if(fb && s.facebook) fb.href = s.facebook;
+  const tt = document.getElementById('social-tiktok'); if(tt && s.tiktok) tt.href = s.tiktok;
+}
+
+async function refreshPublicSite(){
+  await renderMenu();
+  await renderGallery();
+  renderTestimonials();
+  await renderSettings();
+}
+
+/* ---- Forms ---- */
+document.getElementById('reservation-form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const form = e.target;
+  const data = Object.fromEntries(new FormData(form).entries());
+  const customer = await getCurrentCustomer();
+  const payload = { ...data, status:'en attente' };
+  if(customer) payload.user_id = customer.id;
+  if(!payload.email) delete payload.email;
+  const { error } = await addReservation(payload);
+  const msg = document.getElementById('reserve-msg');
+  if(error){
+    msg.className = 'form-msg err';
+    msg.textContent = "Une erreur est survenue, réessayez dans un instant.";
+    return;
+  }
+  msg.className = 'form-msg ok';
+  msg.innerHTML = customer
+    ? `Merci ! Ta réservation a été envoyée et liée à ton compte — retrouve-la dans "Mon compte".`
+    : `Merci ! Votre demande a bien été envoyée. Créez un compte (bouton "Mon compte") pour suivre son statut — confirmée, en attente ou annulée — directement en ligne.`;
+  form.reset();
+  prefillReservationForm();
+});
+
+async function prefillReservationForm(){
+  const customer = await getCurrentCustomer();
+  const nameInput = document.getElementById('res-name-input');
+  const phoneInput = document.getElementById('res-phone-input');
+  const emailInput = document.getElementById('res-email-input');
+  if(customer){
+    if(customer.user_metadata?.name) nameInput.value = customer.user_metadata.name;
+    if(customer.user_metadata?.phone) phoneInput.value = customer.user_metadata.phone;
+    emailInput.value = customer.email || '';
+  }
+}
+
+document.getElementById('contact-form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const form = e.target;
+  const data = Object.fromEntries(new FormData(form).entries());
+  const { error } = await addMessage({ ...data, status:'nouveau' });
+  const msg = document.getElementById('contact-msg');
+  if(error){
+    msg.className = 'form-msg err';
+    msg.textContent = "Une erreur est survenue, réessayez dans un instant.";
+    return;
+  }
+  msg.className = 'form-msg ok';
+  msg.textContent = 'Message envoyé ! Nous vous répondrons rapidement.';
+  form.reset();
+});
+
+/* ---- Nav / scroll / header behaviour ---- */
+document.querySelectorAll('[data-target]').forEach(el=>{
+  el.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const target = document.getElementById(el.dataset.target);
+    if(target){
+      document.getElementById('main-nav').classList.remove('open');
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+});
+document.getElementById('cancel-res-link').addEventListener('click', (e)=>{
+  e.preventDefault();
+  openCancelReservationModal();
+});
+
+function openCancelReservationModal(){
+  const modalBg = document.getElementById('modal-bg');
+  document.getElementById('modal-box').innerHTML = `
+    <h3>Annuler une réservation</h3>
+    <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:20px;">Entre le téléphone, la date et l'heure utilisés lors de la réservation.</p>
+    <form id="cancel-res-form">
+      <div class="admin-field"><label>Téléphone</label><input type="tel" name="phone" placeholder="+216 XX XXX XXX" required></div>
+      <div class="form-row">
+        <div class="admin-field"><label>Date</label><input type="date" name="date" required></div>
+        <div class="admin-field"><label>Heure</label><input type="time" name="time" required></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="cancel-res-close">Fermer</button>
+        <button type="submit" class="btn btn-gold">Annuler la réservation</button>
+      </div>
+    </form>
+    <div id="cancel-res-result" style="margin-top:16px;"></div>
+  `;
+  modalBg.classList.add('open');
+  document.getElementById('cancel-res-close').addEventListener('click', ()=>modalBg.classList.remove('open'));
+  document.getElementById('cancel-res-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const ok = await cancelReservationAsGuest((data.phone||'').trim(), data.date, data.time);
+    const resultBox = document.getElementById('cancel-res-result');
+    resultBox.innerHTML = ok
+      ? `<div class="form-msg ok" style="display:block;">Réservation annulée avec succès.</div>`
+      : `<div class="form-msg err" style="display:block;">Aucune réservation active trouvée avec ces informations. Vérifiez le téléphone, la date et l'heure.</div>`;
+  });
+}
+
+document.getElementById('customer-account-link').addEventListener('click', async ()=>{
+  document.getElementById('main-nav').classList.remove('open');
+  const customer = await getCurrentCustomer();
+  if(customer) openCustomerDashboardModal(customer);
+  else openCustomerAuthModal();
+});
+
+function openCustomerAuthModal(){
+  const modalBg = document.getElementById('modal-bg');
+  document.getElementById('modal-box').innerHTML = `
+    <h3>Mon compte</h3>
+    <div class="admin-toolbar" style="margin-bottom:20px;">
+      <div class="tabs" id="cust-auth-tabs">
+        <button class="active" data-tab="login">Connexion</button>
+        <button data-tab="signup">Créer un compte</button>
+      </div>
+    </div>
+    <form id="cust-login-form">
+      <div class="admin-field"><label>Email</label><input type="email" name="email" required></div>
+      <div class="admin-field"><label>Mot de passe</label><input type="password" name="password" required></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="cust-login-cancel">Annuler</button>
+        <button type="submit" class="btn btn-gold">Se connecter</button>
+      </div>
+    </form>
+    <form id="cust-signup-form" style="display:none;">
+      <div class="admin-field"><label>Nom complet</label><input type="text" name="name" required></div>
+      <div class="admin-field"><label>Téléphone</label><input type="tel" name="phone" required></div>
+      <div class="admin-field"><label>Email</label><input type="email" name="email" required></div>
+      <div class="admin-field"><label>Mot de passe (6 caractères min.)</label><input type="password" name="password" minlength="6" required></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="cust-signup-cancel">Annuler</button>
+        <button type="submit" class="btn btn-gold">Créer mon compte</button>
+      </div>
+    </form>
+    <div class="form-msg" id="cust-auth-msg"></div>
+  `;
+  modalBg.classList.add('open');
+  document.getElementById('cust-login-cancel').addEventListener('click', ()=>modalBg.classList.remove('open'));
+  document.getElementById('cust-signup-cancel').addEventListener('click', ()=>modalBg.classList.remove('open'));
+  document.getElementById('cust-auth-tabs').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-tab]'); if(!btn) return;
+    document.querySelectorAll('#cust-auth-tabs button').forEach(b=>b.classList.toggle('active', b===btn));
+    document.getElementById('cust-login-form').style.display = btn.dataset.tab==='login' ? 'block' : 'none';
+    document.getElementById('cust-signup-form').style.display = btn.dataset.tab==='signup' ? 'block' : 'none';
+  });
+  document.getElementById('cust-login-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const { data: authData, error } = await sbClient.auth.signInWithPassword({ email: data.email.trim(), password: data.password });
+    const msg = document.getElementById('cust-auth-msg');
+    if(error){ msg.className='form-msg err'; msg.textContent = 'Email ou mot de passe incorrect.'; return; }
+    modalBg.classList.remove('open');
+    showToast('Connecté ! Bienvenue.');
+    await prefillReservationForm();
+  });
+  document.getElementById('cust-signup-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const { error } = await sbClient.auth.signUp({
+      email: data.email.trim(), password: data.password,
+      options: { data: { name: data.name, phone: data.phone } }
+    });
+    const msg = document.getElementById('cust-auth-msg');
+    if(error){ msg.className='form-msg err'; msg.textContent = "Erreur : " + error.message; return; }
+    msg.className='form-msg ok';
+    msg.textContent = "Compte créé avec succès ! Si une confirmation par email est activée sur le projet, vérifie ta boîte mail avant de te connecter.";
+    e.target.reset();
+  });
+}
+
+async function openCustomerDashboardModal(customer){
+  const modalBg = document.getElementById('modal-bg');
+  const phone = customer.user_metadata?.phone || '';
+  const orParts = [`user_id.eq.${customer.id}`];
+  if(customer.email) orParts.push(`email.eq.${customer.email}`);
+  if(phone) orParts.push(`phone.eq.${phone}`);
+  const { data: myReservations } = await sbClient.from('reservations').select('*').or(orParts.join(',')).order('created_at', {ascending:false});
+  const list = myReservations || [];
+  document.getElementById('modal-box').innerHTML = `
+    <h3>Bonjour ${customer.user_metadata?.name || customer.email}</h3>
+    <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:20px;">${customer.email}</p>
+    <h4 style="margin-bottom:12px;">Mes réservations</h4>
+    ${list.length ? `<table>
+      <tr><th>Date</th><th>Heure</th><th>Pers.</th><th>Statut</th></tr>
+      ${list.map(r=>`<tr><td>${r.date}</td><td>${r.time}</td><td>${r.people}</td><td><span class="badge ${statusClass(computeDisplayStatus(r))}">${computeDisplayStatus(r)}</span></td></tr>`).join('')}
+    </table>` : `<div class="empty-state" style="padding:20px 0;">Aucune réservation pour l'instant.</div>`}
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="cust-close">Fermer</button>
+      <button type="button" class="btn btn-dark" style="background:var(--coffee-950);color:#fff" id="cust-logout">Déconnexion</button>
+    </div>
+  `;
+  modalBg.classList.add('open');
+  document.getElementById('cust-close').addEventListener('click', ()=>modalBg.classList.remove('open'));
+  document.getElementById('cust-logout').addEventListener('click', async ()=>{
+    await sbClient.auth.signOut();
+    modalBg.classList.remove('open');
+    showToast('Déconnecté');
+    await prefillReservationForm();
+  });
+}
+document.getElementById('burger-btn').addEventListener('click', ()=>{
+  document.getElementById('main-nav').classList.toggle('open');
+});
+
+window.addEventListener('scroll', ()=>{
+  document.getElementById('site-header').classList.toggle('scrolled', window.scrollY > 40);
+});
+document.getElementById('lightbox-close').addEventListener('click', ()=>{
+  document.getElementById('lightbox').classList.remove('open');
+});
+document.getElementById('lightbox').addEventListener('click', (e)=>{
+  if(e.target.id === 'lightbox') document.getElementById('lightbox').classList.remove('open');
+});
+document.querySelectorAll('.lang-switch button').forEach(btn=>{
+  btn.addEventListener('click', ()=> applyLang(btn.dataset.lang));
+});
+
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('in-view'); });
+}, {threshold:0.12});
+function observeReveals(){
+  document.querySelectorAll('.reveal:not(.in-view)').forEach(el=>revealObserver.observe(el));
+}
+
+/* ==================================================================
+   ADMIN
+   ================================================================== */
+let adminLoggedIn = false;
+let adminView = 'dashboard';
+let adminReservationFilter = 'toutes';
+let adminMessageFilter = 'tous';
+
+function setRoute(){
+  const isAdmin = window.location.hash.startsWith('#/admin');
+  document.getElementById('public-root').style.display = isAdmin ? 'none' : '';
+  document.getElementById('admin-root').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('site-header').style.display = isAdmin ? 'none' : '';
+  if(isAdmin){
+    if(adminLoggedIn){ showAdminShell(); } else { showAdminLogin(); }
+  }
+}
+window.addEventListener('hashchange', setRoute);
+document.getElementById('back-to-site').addEventListener('click', (e)=>{ e.preventDefault(); window.location.hash=''; });
+document.getElementById('admin-view-site').addEventListener('click', (e)=>{ e.preventDefault(); window.location.hash=''; });
+
+function showAdminLogin(){
+  document.getElementById('admin-login-view').style.display = 'flex';
+  document.getElementById('admin-shell-view').style.display = 'none';
+}
+function showAdminShell(){
+  document.getElementById('admin-login-view').style.display = 'none';
+  document.getElementById('admin-shell-view').style.display = 'grid';
+  renderAdminView();
+}
+
+document.getElementById('toggle-pwd').addEventListener('click', (e)=>{
+  const input = document.getElementById('admin-pwd-input');
+  const isPwd = input.type === 'password';
+  input.type = isPwd ? 'text' : 'password';
+  e.target.textContent = isPwd ? 'Masquer' : 'Afficher';
+});
+
+document.getElementById('admin-login-form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+  const msg = document.getElementById('admin-login-msg');
+  const { error } = await sbClient.auth.signInWithPassword({
+    email: (data.email || '').trim(),
+    password: (data.password || '').replace(/\s+/g,'').trim()
+  });
+  if(error){
+    msg.className = 'form-msg err';
+    msg.textContent = "Email ou mot de passe incorrect, ou l'utilisateur n'existe pas encore dans Supabase (Authentication > Users).";
+    return;
+  }
+  const isAdmin = await isCurrentUserAdmin();
+  if(!isAdmin){
+    await sbClient.auth.signOut();
+    msg.className = 'form-msg err';
+    msg.textContent = "Ce compte n'a pas les droits administrateur (rôle 'admin' manquant sur le compte).";
+    return;
+  }
+  adminLoggedIn = true;
+  msg.className = 'form-msg';
+  showAdminShell();
+});
+document.getElementById('admin-logout-btn').addEventListener('click', async ()=>{
+  await sbClient.auth.signOut();
+  adminLoggedIn = false;
+  window.location.hash = '';
+});
+
+document.getElementById('admin-nav').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-view]');
+  if(!btn) return;
+  adminView = btn.dataset.view;
+  document.querySelectorAll('#admin-nav button').forEach(b=>b.classList.toggle('active', b===btn));
+  renderAdminView();
+});
+
+async function renderAdminView(){
+  const main = document.getElementById('admin-main');
+  if(adminView === 'dashboard') return renderDashboard(main);
+  if(adminView === 'menu') return renderAdminMenu(main);
+  if(adminView === 'reservations') return renderAdminReservations(main);
+  if(adminView === 'gallery') return renderAdminGallery(main);
+  if(adminView === 'messages') return renderAdminMessages(main);
+  if(adminView === 'settings') return renderAdminSettings(main);
+  if(adminView === 'account') return renderAdminAccount(main);
+}
+
+async function renderDashboard(main){
+  const [menu, reservations, messages] = await Promise.all([getMenu(), getReservations(), getMessages()]);
+  const todayStr = new Date().toISOString().slice(0,10);
+  const todayCount = (reservations||[]).filter(r=>r.date===todayStr).length;
+  const pendingCount = (reservations||[]).filter(r=>r.status==='en attente').length;
+  const unreadCount = (messages||[]).filter(m=>m.status==='nouveau').length;
+
+  main.innerHTML = `
+    <div class="admin-topbar"><h2>Tableau de bord</h2><a class="view-site-link" id="dash-view-site" href="#">Voir le site public →</a></div>
+    <div class="stat-grid">
+      <div class="stat-card"><b>${todayCount}</b><span>Réservations aujourd'hui</span></div>
+      <div class="stat-card"><b>${pendingCount}</b><span>Réservations en attente</span></div>
+      <div class="stat-card"><b>${(menu||[]).length}</b><span>Produits au menu</span></div>
+      <div class="stat-card"><b>${unreadCount}</b><span>Messages non lus</span></div>
+    </div>
+    <div class="admin-panel-box">
+      <h3>Dernières réservations</h3>
+      ${renderMiniReservationTable((reservations||[]).slice(0,5))}
+    </div>
+    <div class="admin-panel-box">
+      <h3>Derniers messages</h3>
+      ${renderMiniMessageTable((messages||[]).slice(0,5))}
+    </div>
+    <div class="admin-panel-box">
+      <h3>Produits populaires</h3>
+      <p style="color:var(--ink-soft);font-size:0.9rem;">Cette section se remplira automatiquement une fois que les statistiques de ventes seront connectées à une caisse. Pour l'instant, voici les produits mis en avant sur le menu :</p>
+      <table style="margin-top:16px;">
+        <tr><th>Produit</th><th>Catégorie</th><th>Prix</th></tr>
+        ${(menu||[]).slice(0,4).map(m=>`<tr><td>${m.name}</td><td>${m.category}</td><td>${Number(m.price).toFixed(2)} TND</td></tr>`).join('')}
+      </table>
+    </div>
+  `;
+  document.getElementById('dash-view-site').addEventListener('click', (e)=>{ e.preventDefault(); window.location.hash=''; });
+}
+
+function renderMiniReservationTable(list){
+  if(!list.length) return `<div class="empty-state">Aucune réservation pour le moment.</div>`;
+  return `<table><tr><th>Nom</th><th>Date</th><th>Heure</th><th>Pers.</th><th>Statut</th></tr>
+    ${list.map(r=>`<tr><td>${r.name}</td><td>${r.date}</td><td>${r.time}</td><td>${r.people}</td><td><span class="badge ${statusClass(computeDisplayStatus(r))}">${computeDisplayStatus(r)}</span></td></tr>`).join('')}
+  </table>`;
+}
+function renderMiniMessageTable(list){
+  if(!list.length) return `<div class="empty-state">Aucun message pour le moment.</div>`;
+  return `<table><tr><th>Nom</th><th>Email</th><th>Message</th><th>Statut</th></tr>
+    ${list.map(m=>`<tr><td>${m.name}</td><td>${m.email}</td><td>${(m.message||'').slice(0,40)}${(m.message||'').length>40?'…':''}</td><td><span class="badge ${m.status==='nouveau'?'new':'read'}">${m.status}</span></td></tr>`).join('')}
+  </table>`;
+}
+function computeDisplayStatus(r){
+  if(r.status === 'annulée') return 'annulée';
+  if(r.status === 'confirmée') return 'confirmée';
+  try{
+    const resDateTime = new Date(`${r.date}T${r.time}`);
+    const cutoff = new Date(resDateTime.getTime() + 15*60000);
+    if(!isNaN(cutoff.getTime()) && new Date() > cutoff) return 'expirée';
+  }catch(e){}
+  return r.status || 'en attente';
+}
+function statusClass(s){
+  if(s==='confirmée') return 'confirmed';
+  if(s==='annulée') return 'cancelled';
+  if(s==='expirée') return 'expired';
+  return 'pending';
+}
+
+/* ---- Admin: Menu CRUD ---- */
+async function renderAdminMenu(main){
+  const items = await getMenu();
+  main.innerHTML = `
+    <div class="admin-topbar"><h2>Gestion du menu</h2><button class="btn btn-gold" id="add-item-btn" style="padding:11px 20px;">+ Ajouter un produit</button></div>
+    <div class="admin-panel-box">
+      <table>
+        <tr><th>Photo</th><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Disponible</th><th></th></tr>
+        ${items.length ? items.map(item=>`
+          <tr>
+            <td><img src="${item.image}" style="width:52px;height:52px;object-fit:cover;border-radius:2px;" alt=""></td>
+            <td>${item.name}</td>
+            <td>${item.category}</td>
+            <td>${Number(item.price).toFixed(2)} TND</td>
+            <td><span class="badge ${item.available?'confirmed':'cancelled'}">${item.available?'Oui':'Non'}</span></td>
+            <td>
+              <button class="icon-btn" data-edit="${item.id}">Modifier</button>
+              <button class="icon-btn danger" data-del="${item.id}">Supprimer</button>
+            </td>
+          </tr>
+        `).join('') : `<tr><td colspan="6"><div class="empty-state">Aucun produit. Ajoutez le premier !</div></td></tr>`}
+      </table>
+    </div>
+  `;
+  document.getElementById('add-item-btn').addEventListener('click', ()=>openMenuModal(null));
+  main.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>openMenuModal(items.find(i=>i.id===b.dataset.edit))));
+  main.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', async ()=>{
+    if(!confirm('Supprimer ce produit ?')) return;
+    await deleteMenuItem(b.dataset.del);
+    showToast('Produit supprimé');
+    renderAdminMenu(main);
+  }));
+}
+
+function openMenuModal(item){
+  const isEdit = !!item;
+  item = item || {id:null,category:'',name:'',description:'',price:'',image:'',available:true};
+  const modalBg = document.getElementById('modal-bg');
+  document.getElementById('modal-box').innerHTML = `
+    <h3>${isEdit?'Modifier le produit':'Ajouter un produit'}</h3>
+    <form id="menu-item-form">
+      <div class="admin-field"><label>Nom</label><input type="text" name="name" value="${item.name}" required></div>
+      <div class="admin-field"><label>Catégorie</label><input type="text" name="category" value="${item.category}" list="cat-list" placeholder="Cafés, Pâtisseries…" required>
+        <datalist id="cat-list"><option>Cafés</option><option>Pâtisseries</option><option>Boissons froides</option><option>Boissons chaudes</option></datalist>
+      </div>
+      <div class="admin-field"><label>Description</label><textarea name="description" rows="2">${item.description}</textarea></div>
+      <div class="admin-field"><label>Prix (TND)</label><input type="number" step="0.1" name="price" value="${item.price}" required></div>
+      <div class="admin-field"><label>Photo — depuis votre appareil</label><input type="file" name="imagefile" id="menu-file-input" accept="image/*"></div>
+      <div class="admin-field"><label>… ou URL de l'image</label><input type="url" name="image" id="menu-url-input" value="${item.image}" placeholder="https://…"></div>
+      <div id="menu-file-preview" style="margin:-6px 0 16px;display:${item.image?'block':'none'};"><img src="${item.image||''}" style="width:110px;height:80px;object-fit:cover;border-radius:2px;border:1px solid var(--line);" alt="Aperçu"></div>
+      <div class="admin-field check"><input type="checkbox" name="available" id="avail-check" ${item.available?'checked':''}><label for="avail-check" style="margin-bottom:0;">Disponible à la vente</label></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="modal-cancel">Annuler</button>
+        <button type="submit" class="btn btn-gold">Enregistrer</button>
+      </div>
+    </form>
+  `;
+  modalBg.classList.add('open');
+  const menuFileInput = document.getElementById('menu-file-input');
+  const menuPreview = document.getElementById('menu-file-preview');
+  menuFileInput.addEventListener('change', ()=>{
+    const file = menuFileInput.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { menuPreview.querySelector('img').src = reader.result; menuPreview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('modal-cancel').addEventListener('click', ()=>modalBg.classList.remove('open'));
+  document.getElementById('menu-item-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const file = menuFileInput.files[0];
+    let imageUrl = data.image;
+    if(file){
+      try{ imageUrl = await fileToCompressedDataUrl(file); }
+      catch(err){ showToast('Photo illisible, réessayez'); return; }
+    }
+    if(!imageUrl){ showToast('Ajoutez une photo (appareil ou URL)'); return; }
+    const newItem = {
+      name: data.name, category: data.category, description: data.description,
+      price: parseFloat(data.price), image: imageUrl, available: !!data.available
+    };
+    const { error } = isEdit ? await updateMenuItem(item.id, newItem) : await addMenuItem(newItem);
+    if(error){ showToast('Erreur : ' + error.message); return; }
+    modalBg.classList.remove('open');
+    showToast(isEdit?'Produit mis à jour':'Produit ajouté');
+    renderAdminMenu(document.getElementById('admin-main'));
+  });
+}
+
+/* ---- Admin: Reservations ---- */
+async function renderAdminReservations(main){
+  let list = await getReservations();
+  if(adminReservationFilter !== 'toutes'){
+    list = list.filter(r => adminReservationFilter === 'expirée' ? computeDisplayStatus(r)==='expirée' : r.status===adminReservationFilter);
+  }
+  main.innerHTML = `
+    <div class="admin-topbar"><h2>Réservations</h2></div>
+    <div class="admin-toolbar">
+      <div class="tabs" id="res-filters">
+        ${['toutes','en attente','confirmée','expirée','annulée'].map(s=>`<button class="${adminReservationFilter===s?'active':''}" data-f="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
+      </div>
+    </div>
+    <div class="admin-panel-box">
+      <table>
+        <tr><th>Nom</th><th>Téléphone</th><th>Date</th><th>Heure</th><th>Pers.</th><th>Note</th><th>Statut</th><th></th></tr>
+        ${list.length ? list.map(r=>`
+          <tr>
+            <td>${r.name}</td><td>${r.phone}</td><td>${r.date}</td><td>${r.time}</td><td>${r.people}</td>
+            <td style="max-width:160px;">${r.note||'—'}</td>
+            <td><span class="badge ${statusClass(computeDisplayStatus(r))}">${computeDisplayStatus(r)}</span></td>
+            <td>
+              <select data-status="${r.id}" style="padding:6px 8px;border:1px solid var(--line);border-radius:2px;font-size:0.8rem;">
+                <option value="en attente" ${r.status==='en attente'?'selected':''}>En attente</option>
+                <option value="confirmée" ${r.status==='confirmée'?'selected':''}>Confirmée</option>
+                <option value="annulée" ${r.status==='annulée'?'selected':''}>Annulée</option>
+              </select>
+            </td>
+          </tr>
+        `).join('') : `<tr><td colspan="8"><div class="empty-state">Aucune réservation ${adminReservationFilter!=='toutes'?'avec ce statut':''}.</div></td></tr>`}
+      </table>
+    </div>
+  `;
+  document.getElementById('res-filters').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-f]'); if(!btn) return;
+    adminReservationFilter = btn.dataset.f;
+    renderAdminReservations(main);
+  });
+  main.querySelectorAll('[data-status]').forEach(sel=>{
+    sel.addEventListener('change', async ()=>{
+      const { error } = await updateReservationStatus(sel.dataset.status, sel.value);
+      if(error){ showToast('Erreur : ' + error.message); return; }
+      showToast('Statut mis à jour');
+    });
+  });
+}
+
+/* ---- Admin: Gallery ---- */
+async function renderAdminGallery(main){
+  const photos = await getGallery();
+  main.innerHTML = `
+    <div class="admin-topbar"><h2>Galerie</h2></div>
+    <div class="admin-panel-box">
+      <h3>Ajouter une photo</h3>
+      <form id="gallery-add-form">
+        <div class="form-row" style="align-items:end;">
+          <div class="admin-field" style="margin-bottom:0;">
+            <label>Depuis votre appareil</label>
+            <input type="file" name="file" accept="image/*" id="gallery-file-input">
+          </div>
+          <div class="admin-field" style="margin-bottom:0;">
+            <label>ou coller une URL</label>
+            <input type="url" name="url" placeholder="https://…">
+          </div>
+        </div>
+        <div class="admin-field" style="margin-top:16px;"><label>Légende (optionnel)</label><input type="text" name="caption" placeholder="Ex. Coin lecture"></div>
+        <div id="gallery-file-preview" style="margin:10px 0;display:none;"><img style="width:110px;height:80px;object-fit:cover;border-radius:2px;border:1px solid var(--line);" alt="Aperçu"></div>
+        <button type="submit" class="btn btn-gold" style="margin-top:6px;">Ajouter</button>
+      </form>
+    </div>
+    <div class="admin-panel-box">
+      <h3>Photos actuelles (${photos.length})</h3>
+      <div class="gallery-admin-grid">
+        ${photos.map(p=>`<div class="ga-item"><img src="${p.url}" alt="${p.caption||''}"><button class="rm" data-del="${p.id}">✕</button></div>`).join('') || '<div class="empty-state">Aucune photo.</div>'}
+      </div>
+    </div>
+  `;
+  const fileInput = document.getElementById('gallery-file-input');
+  const previewBox = document.getElementById('gallery-file-preview');
+  fileInput.addEventListener('change', ()=>{
+    const file = fileInput.files[0];
+    if(!file){ previewBox.style.display = 'none'; return; }
+    const reader = new FileReader();
+    reader.onload = () => { previewBox.querySelector('img').src = reader.result; previewBox.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('gallery-add-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+    const file = fileInput.files[0];
+    if(!file && !data.url){ showToast('Ajoutez une photo (appareil ou URL)'); return; }
+    let imageUrl = data.url;
+    if(file){
+      try{ imageUrl = await fileToCompressedDataUrl(file); }
+      catch(err){ showToast('Photo illisible, réessayez'); return; }
+    }
+    const { error } = await addGalleryPhoto({ url: imageUrl, caption: data.caption || null });
+    if(error){ showToast('Erreur : ' + error.message); return; }
+    showToast('Photo ajoutée');
+    renderAdminGallery(main);
+  });
+  main.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', async ()=>{
+    await deleteGalleryPhoto(b.dataset.del);
+    showToast('Photo supprimée');
+    renderAdminGallery(main);
+  }));
+}
+
+/* ---- Admin: My account (change own email / password) ---- */
+async function renderAdminAccount(main){
+  const { data: { user } } = await sbClient.auth.getUser();
+  main.innerHTML = `
+    <div class="admin-topbar"><h2>Mon compte</h2></div>
+    <div class="admin-panel-box">
+      <h3>Identifiants de connexion</h3>
+      <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:22px;">Connecté avec : <b>${user?.email || '—'}</b>. Change ton email et/ou ton mot de passe ici — pas besoin de retourner sur Supabase.</p>
+      <form id="account-form">
+        <div class="admin-field"><label>Nouvel email (laisser vide pour ne pas changer)</label><input type="email" name="email" placeholder="${user?.email || ''}"></div>
+        <div class="admin-field"><label>Nouveau mot de passe (laisser vide pour ne pas changer)</label><input type="password" name="password" placeholder="••••••••" minlength="6"></div>
+        <button type="submit" class="btn btn-gold">Mettre à jour</button>
+        <div class="form-msg" id="account-msg"></div>
+      </form>
+    </div>
+  `;
+  document.getElementById('account-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const updates = {};
+    if(data.email) updates.email = data.email.trim();
+    if(data.password) updates.password = data.password;
+    const msg = document.getElementById('account-msg');
+    if(!Object.keys(updates).length){
+      msg.className = 'form-msg err';
+      msg.textContent = 'Remplis au moins un des deux champs.';
+      return;
+    }
+    const { error } = await sbClient.auth.updateUser(updates);
+    if(error){
+      msg.className = 'form-msg err';
+      msg.textContent = "Erreur : " + error.message;
+    } else {
+      msg.className = 'form-msg ok';
+      msg.textContent = updates.email
+        ? 'Mis à jour. Si l\'email a changé, vérifie ta boîte mail pour confirmer (selon la config Supabase).'
+        : 'Mot de passe mis à jour avec succès.';
+      e.target.reset();
+    }
+  });
+}
+
+/* ---- Admin: Settings (address, phone, email, hours, social, map) ---- */
+async function renderAdminSettings(main){
+  const s = await getSettings();
+  main.innerHTML = `
+    <div class="admin-topbar"><h2>Paramètres du site</h2></div>
+    <div class="admin-panel-box">
+      <h3>Coordonnées & localisation</h3>
+      <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:22px;">Ces informations s'affichent dans la section Contact et le pied de page du site public — toute modification est immédiate.</p>
+      <form id="settings-form">
+        <div class="admin-field"><label>Adresse</label><input type="text" name="address" value="${s.address||''}" placeholder="Ex. 15 Avenue Habib Bourguiba, La Marsa" required></div>
+        <div class="form-row">
+          <div class="admin-field"><label>Téléphone</label><input type="tel" name="phone" value="${s.phone||''}" placeholder="+216 XX XXX XXX" required></div>
+          <div class="admin-field"><label>Email</label><input type="email" name="email" value="${s.email||''}" placeholder="contact@monsite.tn" required></div>
+        </div>
+        <div class="admin-field"><label>Horaires (texte affiché)</label><input type="text" name="hours" value="${s.hours||''}" placeholder="Ouvert tous les jours, 08:00 – 23:00"></div>
+        <div class="admin-field"><label>Localisation pour Google Maps</label><input type="text" name="mapQuery" value="${s.mapQuery||''}" placeholder="Ex. La Marsa, Tunisia — ou une adresse précise"></div>
+        <div class="form-row">
+          <div class="admin-field"><label>Instagram (URL)</label><input type="url" name="instagram" value="${s.instagram||''}" placeholder="https://instagram.com/..."></div>
+          <div class="admin-field"><label>Facebook (URL)</label><input type="url" name="facebook" value="${s.facebook||''}" placeholder="https://facebook.com/..."></div>
+        </div>
+        <div class="admin-field"><label>TikTok (URL)</label><input type="url" name="tiktok" value="${s.tiktok||''}" placeholder="https://tiktok.com/@..."></div>
+        <button type="submit" class="btn btn-gold">Enregistrer les modifications</button>
+        <div class="form-msg" id="settings-msg"></div>
+      </form>
+    </div>
+  `;
+  document.getElementById('settings-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const { error } = await updateSettings(data);
+    const msg = document.getElementById('settings-msg');
+    if(error){
+      msg.className = 'form-msg err';
+      msg.textContent = 'Erreur : ' + error.message;
+      return;
+    }
+    await renderSettings();
+    msg.className = 'form-msg ok';
+    msg.textContent = 'Paramètres enregistrés — le site public est à jour.';
+    showToast('Paramètres mis à jour');
+  });
+}
+
+/* ---- Admin: Messages ---- */
+async function renderAdminMessages(main){
+  let list = await getMessages();
+  if(adminMessageFilter !== 'tous') list = list.filter(m=>m.status===adminMessageFilter);
+  main.innerHTML = `
+    <div class="admin-topbar"><h2>Messages de contact</h2></div>
+    <div class="admin-toolbar">
+      <div class="tabs" id="msg-filters">
+        ${['tous','nouveau','traité'].map(s=>`<button class="${adminMessageFilter===s?'active':''}" data-f="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
+      </div>
+    </div>
+    <div class="admin-panel-box">
+      <table>
+        <tr><th>Nom</th><th>Email</th><th>Message</th><th>Reçu</th><th>Statut</th><th></th></tr>
+        ${list.length ? list.map(m=>`
+          <tr>
+            <td>${m.name}</td><td>${m.email}</td>
+            <td style="max-width:260px;">${m.message}</td>
+            <td>${new Date(m.created_at).toLocaleDateString('fr-FR')}</td>
+            <td><span class="badge ${m.status==='nouveau'?'new':'read'}">${m.status}</span></td>
+            <td><button class="icon-btn" data-toggle="${m.id}">${m.status==='nouveau'?'Marquer traité':'Marquer nouveau'}</button></td>
+          </tr>
+        `).join('') : `<tr><td colspan="6"><div class="empty-state">Aucun message.</div></td></tr>`}
+      </table>
+    </div>
+  `;
+  document.getElementById('msg-filters').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-f]'); if(!btn) return;
+    adminMessageFilter = btn.dataset.f;
+    renderAdminMessages(main);
+  });
+  main.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click', async ()=>{
+    const current = list.find(m=>m.id===b.dataset.toggle);
+    const newStatus = current.status==='nouveau' ? 'traité' : 'nouveau';
+    await updateMessageStatus(b.dataset.toggle, newStatus);
+    showToast('Statut mis à jour');
+    renderAdminMessages(main);
+  }));
+}
+
+/* ==================================================================
+   INIT
+   ================================================================== */
+(async function init(){
+  await ensureSeed();
+  await refreshPublicSite();
+  applyLang('fr');
+  observeReveals();
+  const { data: { session } } = await sbClient.auth.getSession();
+  if(session && (await isCurrentUserAdmin())) adminLoggedIn = true;
+  await prefillReservationForm();
+  setRoute();
+  // re-observe reveal targets that get added dynamically (menu/gallery)
+  setTimeout(observeReveals, 400);
+})();
+</script>
+</body>
+</html>
