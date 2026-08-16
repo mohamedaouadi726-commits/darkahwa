@@ -763,7 +763,22 @@ async function getCurrentCustomer(){
   const { data: { user } } = await sbClient.auth.getUser();
   if(!user) return null;
   if(user.app_metadata && user.app_metadata.role === 'admin') return null; // admin isn't a "customer" on the public site
-  return user;
+  const { data: profile } = await sbClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
+  return {
+    id: user.id,
+    email: user.email,
+    name: profile?.name || user.user_metadata?.name || '',
+    phone: profile?.phone || user.user_metadata?.phone || '',
+    avatar: profile?.avatar || ''
+  };
+}
+async function updateCustomerProfile(id, fields){
+  return sbClient.from('profiles').update({ ...fields, updated_at: new Date().toISOString() }).eq('id', id);
+}
+async function checkEmailExists(email){
+  const { data, error } = await sbClient.rpc('email_exists', { p_email: email });
+  if(error) return null;
+  return !!data;
 }
 
 /* ---- Real per-table data access (menu_items, gallery_photos, reservations, contact_messages, site_settings) ---- */
@@ -1089,8 +1104,8 @@ async function prefillReservationForm(){
   const phoneInput = document.getElementById('res-phone-input');
   const emailInput = document.getElementById('res-email-input');
   if(customer){
-    if(customer.user_metadata?.name) nameInput.value = customer.user_metadata.name;
-    if(customer.user_metadata?.phone) phoneInput.value = customer.user_metadata.phone;
+    if(customer.name) nameInput.value = customer.name;
+    if(customer.phone) phoneInput.value = customer.phone;
     emailInput.value = customer.email || '';
   }
 }
@@ -1209,7 +1224,28 @@ function openCustomerAuthModal(){
     const data = Object.fromEntries(new FormData(e.target).entries());
     const { data: authData, error } = await sbClient.auth.signInWithPassword({ email: data.email.trim(), password: data.password });
     const msg = document.getElementById('cust-auth-msg');
-    if(error){ msg.className='form-msg err'; msg.textContent = 'Email ou mot de passe incorrect.'; return; }
+    if(error){
+      const lowerMsg = (error.message || '').toLowerCase();
+      if(lowerMsg.includes('confirm')){
+        msg.className = 'form-msg err';
+        msg.textContent = "Ton email n'est pas encore confirmé. Vérifie ta boîte mail (et les spams) pour le lien de confirmation.";
+        return;
+      }
+      const exists = await checkEmailExists(data.email.trim());
+      if(exists === false){
+        msg.className = 'form-msg err';
+        msg.innerHTML = `Aucun compte trouvé avec cet email. <a href="#" id="cust-goto-signup" style="color:var(--gold-dim);border-bottom:1px solid var(--gold-dim);">Créer un compte ?</a>`;
+        const link = document.getElementById('cust-goto-signup');
+        if(link) link.addEventListener('click', (ev)=>{
+          ev.preventDefault();
+          document.querySelector('#cust-auth-tabs button[data-tab="signup"]').click();
+        });
+        return;
+      }
+      msg.className = 'form-msg err';
+      msg.textContent = 'Email ou mot de passe incorrect. Vérifie tes informations.';
+      return;
+    }
     modalBg.classList.remove('open');
     showToast('Connecté ! Bienvenue.');
     await prefillReservationForm();
@@ -1229,28 +1265,128 @@ function openCustomerAuthModal(){
   });
 }
 
+let custDashboardTab = 'reservations';
+
 async function openCustomerDashboardModal(customer){
   const modalBg = document.getElementById('modal-bg');
-  const phone = customer.user_metadata?.phone || '';
   const orParts = [`user_id.eq.${customer.id}`];
   if(customer.email) orParts.push(`email.eq.${customer.email}`);
-  if(phone) orParts.push(`phone.eq.${phone}`);
+  if(customer.phone) orParts.push(`phone.eq.${customer.phone}`);
   const { data: myReservations } = await sbClient.from('reservations').select('*').or(orParts.join(',')).order('created_at', {ascending:false});
   const list = myReservations || [];
+
   document.getElementById('modal-box').innerHTML = `
-    <h3>Bonjour ${customer.user_metadata?.name || customer.email}</h3>
-    <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:20px;">${customer.email}</p>
-    <h4 style="margin-bottom:12px;">Mes réservations</h4>
-    ${list.length ? `<table>
-      <tr><th>Date</th><th>Heure</th><th>Pers.</th><th>Statut</th></tr>
-      ${list.map(r=>`<tr><td>${r.date}</td><td>${r.time}</td><td>${r.people}</td><td><span class="badge ${statusClass(computeDisplayStatus(r))}">${computeDisplayStatus(r)}</span></td></tr>`).join('')}
-    </table>` : `<div class="empty-state" style="padding:20px 0;">Aucune réservation pour l'instant.</div>`}
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+      <div id="cust-avatar-preview" style="width:56px;height:56px;border-radius:50%;background:var(--coffee-800);color:var(--gold-light);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:1.4rem;overflow:hidden;flex-shrink:0;">
+        ${customer.avatar ? `<img src="${customer.avatar}" style="width:100%;height:100%;object-fit:cover;">` : (customer.name || customer.email || '?').charAt(0).toUpperCase()}
+      </div>
+      <div>
+        <h3 style="margin:0;">${customer.name || customer.email}</h3>
+        <p style="color:var(--ink-soft);font-size:0.85rem;margin-top:2px;">${customer.email}</p>
+      </div>
+    </div>
+    <div class="admin-toolbar" style="margin-bottom:18px;">
+      <div class="tabs" id="cust-dash-tabs">
+        <button data-t="reservations" class="${custDashboardTab==='reservations'?'active':''}">Réservations</button>
+        <button data-t="profile" class="${custDashboardTab==='profile'?'active':''}">Mon profil</button>
+        <button data-t="password" class="${custDashboardTab==='password'?'active':''}">Mot de passe</button>
+      </div>
+    </div>
+    <div id="cust-dash-content"></div>
     <div class="modal-actions">
       <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="cust-close">Fermer</button>
       <button type="button" class="btn btn-dark" style="background:var(--coffee-950);color:#fff" id="cust-logout">Déconnexion</button>
     </div>
   `;
   modalBg.classList.add('open');
+
+  function renderTabContent(){
+    const box = document.getElementById('cust-dash-content');
+    if(custDashboardTab === 'reservations'){
+      box.innerHTML = list.length ? `<table>
+        <tr><th>Date</th><th>Heure</th><th>Pers.</th><th>Statut</th></tr>
+        ${list.map(r=>`<tr><td>${r.date}</td><td>${r.time}</td><td>${r.people}</td><td><span class="badge ${statusClass(computeDisplayStatus(r))}">${computeDisplayStatus(r)}</span></td></tr>`).join('')}
+      </table>` : `<div class="empty-state" style="padding:20px 0;">Aucune réservation pour l'instant.</div>`;
+    }
+    else if(custDashboardTab === 'profile'){
+      box.innerHTML = `
+        <form id="cust-profile-form">
+          <div class="admin-field"><label>Photo de profil</label><input type="file" name="avatarfile" id="cust-avatar-input" accept="image/*"></div>
+          <div class="admin-field"><label>Nom complet</label><input type="text" name="name" value="${customer.name||''}"></div>
+          <div class="admin-field"><label>Téléphone</label><input type="tel" name="phone" value="${customer.phone||''}"></div>
+          <div class="admin-field"><label>Email</label><input type="email" value="${customer.email||''}" disabled style="opacity:0.6;"></div>
+          <div class="modal-actions" style="justify-content:flex-end;">
+            <button type="submit" class="btn btn-gold">Enregistrer les modifications</button>
+          </div>
+          <div class="form-msg" id="cust-profile-msg"></div>
+        </form>
+      `;
+      document.getElementById('cust-profile-form').addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target).entries());
+        const file = document.getElementById('cust-avatar-input').files[0];
+        const fields = { name: data.name, phone: data.phone };
+        if(file){
+          try{ fields.avatar = await fileToCompressedDataUrl(file, 300, 0.7); }
+          catch(err){ /* ignore, keep old avatar */ }
+        }
+        const { error } = await updateCustomerProfile(customer.id, fields);
+        const msg = document.getElementById('cust-profile-msg');
+        if(error){ msg.className='form-msg err'; msg.textContent = 'Erreur : ' + error.message; return; }
+        msg.className='form-msg ok';
+        msg.textContent = 'Profil mis à jour.';
+        showToast('Profil mis à jour');
+        const refreshed = await getCurrentCustomer();
+        openCustomerDashboardModal(refreshed);
+      });
+    }
+    else if(custDashboardTab === 'password'){
+      box.innerHTML = `
+        <h4 style="margin-bottom:10px;">Changer le mot de passe</h4>
+        <form id="cust-pwd-form">
+          <div class="admin-field"><label>Mot de passe actuel</label><input type="password" name="current" required></div>
+          <div class="admin-field"><label>Nouveau mot de passe (6 caractères min.)</label><input type="password" name="new" minlength="6" required></div>
+          <div class="modal-actions" style="justify-content:flex-end;">
+            <button type="submit" class="btn btn-gold">Mettre à jour</button>
+          </div>
+        </form>
+        <div class="form-msg" id="cust-pwd-msg"></div>
+        <hr style="border:none;border-top:1px solid var(--line);margin:22px 0;">
+        <h4 style="margin-bottom:8px;">Mot de passe oublié ?</h4>
+        <p style="color:var(--ink-soft);font-size:0.85rem;margin-bottom:12px;">On t'envoie un lien par email pour en choisir un nouveau.</p>
+        <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="cust-forgot-btn">Envoyer le lien par email</button>
+        <div class="form-msg" id="cust-forgot-msg"></div>
+      `;
+      document.getElementById('cust-pwd-form').addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target).entries());
+        const msg = document.getElementById('cust-pwd-msg');
+        const { error: reauthError } = await sbClient.auth.signInWithPassword({ email: customer.email, password: data.current });
+        if(reauthError){ msg.className='form-msg err'; msg.textContent = 'Mot de passe actuel incorrect.'; return; }
+        const { error } = await sbClient.auth.updateUser({ password: data.new });
+        if(error){ msg.className='form-msg err'; msg.textContent = 'Erreur : ' + error.message; return; }
+        msg.className='form-msg ok';
+        msg.textContent = 'Mot de passe mis à jour avec succès.';
+        e.target.reset();
+      });
+      document.getElementById('cust-forgot-btn').addEventListener('click', async ()=>{
+        const redirectTo = window.location.origin + window.location.pathname;
+        const { error } = await sbClient.auth.resetPasswordForEmail(customer.email, { redirectTo });
+        const msg = document.getElementById('cust-forgot-msg');
+        if(error){ msg.className='form-msg err'; msg.textContent = 'Erreur : ' + error.message; return; }
+        msg.className='form-msg ok';
+        msg.textContent = "Email envoyé ! Vérifie ta boîte mail (et les spams) pour le lien de réinitialisation.";
+      });
+    }
+  }
+  renderTabContent();
+
+  document.getElementById('cust-dash-tabs').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-t]'); if(!btn) return;
+    custDashboardTab = btn.dataset.t;
+    document.querySelectorAll('#cust-dash-tabs button').forEach(b=>b.classList.toggle('active', b===btn));
+    renderTabContent();
+  });
   document.getElementById('cust-close').addEventListener('click', ()=>modalBg.classList.remove('open'));
   document.getElementById('cust-logout').addEventListener('click', async ()=>{
     await sbClient.auth.signOut();
@@ -1259,6 +1395,33 @@ async function openCustomerDashboardModal(customer){
     await prefillReservationForm();
   });
 }
+
+function openSetNewPasswordModal(){
+  const modalBg = document.getElementById('modal-bg');
+  document.getElementById('modal-box').innerHTML = `
+    <h3>Nouveau mot de passe</h3>
+    <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:20px;">Choisis un nouveau mot de passe pour ton compte.</p>
+    <form id="new-pwd-form">
+      <div class="admin-field"><label>Nouveau mot de passe (6 caractères min.)</label><input type="password" name="password" minlength="6" required></div>
+      <div class="modal-actions" style="justify-content:flex-end;">
+        <button type="submit" class="btn btn-gold">Enregistrer</button>
+      </div>
+    </form>
+    <div class="form-msg" id="new-pwd-msg"></div>
+  `;
+  modalBg.classList.add('open');
+  document.getElementById('new-pwd-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const { error } = await sbClient.auth.updateUser({ password: data.password });
+    const msg = document.getElementById('new-pwd-msg');
+    if(error){ msg.className='form-msg err'; msg.textContent = 'Erreur : ' + error.message; return; }
+    msg.className='form-msg ok';
+    msg.textContent = 'Mot de passe mis à jour ! Tu peux fermer cette fenêtre.';
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  });
+}
+
 document.getElementById('burger-btn').addEventListener('click', ()=>{
   document.getElementById('main-nav').classList.toggle('open');
 });
@@ -1770,6 +1933,9 @@ async function renderAdminMessages(main){
   if(session && (await isCurrentUserAdmin())) adminLoggedIn = true;
   await prefillReservationForm();
   setRoute();
+  if(window.location.hash.includes('type=recovery')){
+    setTimeout(()=>openSetNewPasswordModal(), 300);
+  }
   // re-observe reveal targets that get added dynamically (menu/gallery)
   setTimeout(observeReveals, 400);
 })();
