@@ -1312,9 +1312,27 @@ async function openCustomerDashboardModal(customer){
     const box = document.getElementById('cust-dash-content');
     if(custDashboardTab === 'reservations'){
       box.innerHTML = list.length ? `<table>
-        <tr><th>Date</th><th>Heure</th><th>Pers.</th><th>Statut</th></tr>
-        ${list.map(r=>`<tr><td>${r.date}</td><td>${r.time}</td><td>${r.people}</td><td><span class="badge ${statusClass(computeDisplayStatus(r))}">${computeDisplayStatus(r)}</span></td></tr>`).join('')}
+        <tr><th>Date</th><th>Heure</th><th>Pers.</th><th>Statut</th><th></th></tr>
+        ${list.map(r=>{
+          const displayStatus = computeDisplayStatus(r);
+          const canCancel = displayStatus !== 'annulée' && displayStatus !== 'expirée';
+          return `<tr>
+            <td>${r.date}</td><td>${r.time}</td><td>${r.people}</td>
+            <td><span class="badge ${statusClass(displayStatus)}">${displayStatus}</span></td>
+            <td>${canCancel ? `<button class="icon-btn danger" data-cancel-res="${r.id}">Annuler</button>` : ''}</td>
+          </tr>`;
+        }).join('')}
       </table>` : `<div class="empty-state" style="padding:20px 0;">Aucune réservation pour l'instant.</div>`;
+      box.querySelectorAll('[data-cancel-res]').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          if(!confirm('Annuler cette réservation ?')) return;
+          const { error } = await sbClient.from('reservations').update({ status: 'annulée' }).eq('id', btn.dataset.cancelRes);
+          if(error){ showToast('Erreur : ' + error.message); return; }
+          showToast('Réservation annulée');
+          const refreshed = await getCurrentCustomer();
+          openCustomerDashboardModal(refreshed);
+        });
+      });
     }
     else if(custDashboardTab === 'profile'){
       box.innerHTML = `
