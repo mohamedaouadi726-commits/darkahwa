@@ -708,14 +708,6 @@ const SUPABASE_URL = 'https://nqauqewbdiksoolsjwhc.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_KM0WHrrGSoIe0GQGARpQkA_M2iPluua';
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const KEYS = {
-  menu: 'darelkahwa-menu-items',
-  gallery: 'darelkahwa-gallery-photos',
-  reservations: 'darelkahwa-reservations',
-  messages: 'darelkahwa-messages',
-  settings: 'darelkahwa-site-settings'
-};
-
 const DEFAULT_SETTINGS = {
   address: '15 Avenue Habib Bourguiba, La Marsa, Tunis, Tunisie',
   phone: '+216 71 456 789',
@@ -848,7 +840,6 @@ async function ensureSeed(){
   await seedGalleryIfEmpty();
 }
 
-function uid(){ return 'id' + Math.random().toString(36).slice(2,10); }
 function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
@@ -1193,6 +1184,7 @@ function openCustomerAuthModal(){
     <form id="cust-login-form">
       <div class="admin-field"><label>Email</label><input type="email" name="email" required></div>
       <div class="admin-field"><label>Mot de passe</label><input type="password" name="password" required></div>
+      <p style="margin:-8px 0 16px;"><a href="#" id="cust-login-forgot" style="color:var(--ink-soft);font-size:0.82rem;border-bottom:1px solid var(--line);">Mot de passe oublié ?</a></p>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="cust-login-cancel">Annuler</button>
         <button type="submit" class="btn btn-gold">Se connecter</button>
@@ -1212,6 +1204,22 @@ function openCustomerAuthModal(){
   `;
   modalBg.classList.add('open');
   document.getElementById('cust-login-cancel').addEventListener('click', ()=>modalBg.classList.remove('open'));
+  document.getElementById('cust-login-forgot').addEventListener('click', async (e)=>{
+    e.preventDefault();
+    const emailInput = document.querySelector('#cust-login-form input[name="email"]');
+    const email = (emailInput.value || '').trim();
+    const msg = document.getElementById('cust-auth-msg');
+    if(!email){
+      msg.className = 'form-msg err';
+      msg.textContent = "Écris d'abord ton email ci-dessus, puis clique sur ce lien.";
+      return;
+    }
+    const redirectTo = window.location.origin + window.location.pathname;
+    const { error } = await sbClient.auth.resetPasswordForEmail(email, { redirectTo });
+    if(error){ msg.className = 'form-msg err'; msg.textContent = 'Erreur : ' + error.message; return; }
+    msg.className = 'form-msg ok';
+    msg.textContent = "Email envoyé ! Vérifie ta boîte mail (et les spams) pour le lien de réinitialisation.";
+  });
   document.getElementById('cust-signup-cancel').addEventListener('click', ()=>modalBg.classList.remove('open'));
   document.getElementById('cust-auth-tabs').addEventListener('click', (e)=>{
     const btn = e.target.closest('button[data-tab]'); if(!btn) return;
@@ -1243,7 +1251,7 @@ function openCustomerAuthModal(){
         return;
       }
       msg.className = 'form-msg err';
-      msg.textContent = 'Email ou mot de passe incorrect. Vérifie tes informations.';
+      msg.textContent = `Email ou mot de passe incorrect. Vérifie tes informations. (Détail technique : ${error.message})`;
       return;
     }
     modalBg.classList.remove('open');
