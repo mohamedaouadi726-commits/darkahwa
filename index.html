@@ -1281,7 +1281,7 @@ async function openCustomerDashboardModal(customer){
   if(customer.email) orParts.push(`email.eq.${customer.email}`);
   if(customer.phone) orParts.push(`phone.eq.${customer.phone}`);
   const { data: myReservations } = await sbClient.from('reservations').select('*').or(orParts.join(',')).order('created_at', {ascending:false});
-  const list = myReservations || [];
+  const list = (myReservations || []).filter(r => r.status !== 'annulée');
 
   document.getElementById('modal-box').innerHTML = `
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
