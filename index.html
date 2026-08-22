@@ -473,9 +473,9 @@ tr:last-child td{border-bottom:none;}
       </div>
       <div class="about-text reveal">
         <div class="eyebrow" data-i18n="about_eyebrow">Notre histoire</div>
-        <h2 data-i18n="about_title">Une maison de café, pas un passage</h2>
-        <p data-i18n="about_p1">Dar El Kahwa est né d'une idée simple : recréer, à La Marsa, la lenteur des cafés qui ont vu grandir nos parents — le marc qui infuse, les voix qui se mêlent, le temps qui n'est plus compté.</p>
-        <p data-i18n="about_p2">Chaque grain est torréfié en petite quantité par un partenaire tunisien, chaque pâtisserie sort de notre cuisine le matin même. Le granit sombre et les touches dorées du décor rendent hommage à l'artisanat local, entre tradition et modernité.</p>
+        <h2 id="about-title">Une maison de café, pas un passage</h2>
+        <p id="about-text1">Dar El Kahwa est né d'une idée simple : recréer, à La Marsa, la lenteur des cafés qui ont vu grandir nos parents — le marc qui infuse, les voix qui se mêlent, le temps qui n'est plus compté.</p>
+        <p id="about-text2">Chaque grain est torréfié en petite quantité par un partenaire tunisien, chaque pâtisserie sort de notre cuisine le matin même. Le granit sombre et les touches dorées du décor rendent hommage à l'artisanat local, entre tradition et modernité.</p>
         <div class="about-stats">
           <div class="stat"><b>2019</b><span data-i18n="about_stat1">Ouverture</span></div>
           <div class="stat"><b>12</b><span data-i18n="about_stat2">Origines de café</span></div>
@@ -510,6 +510,9 @@ tr:last-child td{border-bottom:none;}
       <h2 data-i18n="testi_title">Ce qu'on en dit</h2>
     </div>
     <div class="testi-grid reveal" id="testi-grid"></div>
+    <div class="reveal" style="max-width:520px;margin:50px auto 0;text-align:center;">
+      <button class="btn btn-outline" style="border-color:var(--coffee-950);color:var(--coffee-950);" id="open-review-btn">Laisser un avis</button>
+    </div>
   </div>
 </section>
 
@@ -688,6 +691,7 @@ tr:last-child td{border-bottom:none;}
         <button data-view="reservations">📅 Réservations</button>
         <button data-view="gallery">🖼 Galerie</button>
         <button data-view="messages">✉ Messages</button>
+        <button data-view="reviews">★ Avis</button>
         <button data-view="settings">⚙ Paramètres</button>
         <button data-view="account">🔑 Mon compte</button>
       </div>
@@ -719,7 +723,10 @@ const DEFAULT_SETTINGS = {
   email: 'bonjour@darelkahwa.tn',
   hours: 'Ouvert tous les jours, 08:00 – 23:00 (00:30 le week-end)',
   mapQuery: 'La Marsa, Tunisia',
-  instagram: '', facebook: '', tiktok: ''
+  instagram: '', facebook: '', tiktok: '',
+  aboutTitle: 'Une maison de café, pas un passage',
+  aboutText1: "Dar El Kahwa est né d'une idée simple : recréer, à La Marsa, la lenteur des cafés qui ont vu grandir nos parents.",
+  aboutText2: "Chaque grain est torréfié en petite quantité, chaque pâtisserie sort de notre cuisine le matin même."
 };
 
 const DEFAULT_MENU = [
@@ -744,12 +751,6 @@ const DEFAULT_GALLERY = [
   {id:'g6',url:'https://images.unsplash.com/photo-1522992319-0365e5f11656?auto=format&fit=crop&w=700&q=75',caption:'Pâtisseries du matin'},
   {id:'g7',url:'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=700&q=75',caption:'Sélection de grains'},
   {id:'g8',url:'https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=700&q=75',caption:'Préparation en salle'}
-];
-
-const TESTIMONIALS = [
-  {name:'Amira K.',loc:'La Marsa',text:'L\'endroit parfait pour travailler l\'après-midi. Le café turc est comme chez ma grand-mère.',rating:5},
-  {name:'Karim B.',loc:'Tunis',text:'Décor magnifique, service impeccable. La baklawa maison vaut à elle seule le déplacement.',rating:5},
-  {name:'Sarra M.',loc:'Sidi Bou Saïd',text:'On y va en famille tous les dimanches. Toujours accueillant, jamais bruyant.',rating:4}
 ];
 
 async function isCurrentUserAdmin(){
@@ -809,15 +810,30 @@ async function getSettings(){
   if(error || !data) return DEFAULT_SETTINGS;
   return {
     address: data.address, phone: data.phone, email: data.email, hours: data.hours,
-    mapQuery: data.map_query, instagram: data.instagram, facebook: data.facebook, tiktok: data.tiktok
+    mapQuery: data.map_query, instagram: data.instagram, facebook: data.facebook, tiktok: data.tiktok,
+    aboutTitle: data.about_title, aboutText1: data.about_text1, aboutText2: data.about_text2
   };
 }
 async function updateSettings(s){
   return sbClient.from('site_settings').update({
     address: s.address, phone: s.phone, email: s.email, hours: s.hours,
-    map_query: s.mapQuery, instagram: s.instagram, facebook: s.facebook, tiktok: s.tiktok
+    map_query: s.mapQuery, instagram: s.instagram, facebook: s.facebook, tiktok: s.tiktok,
+    about_title: s.aboutTitle, about_text1: s.aboutText1, about_text2: s.aboutText2
   }).eq('id', 1);
 }
+
+async function getPublishedReviews(){
+  const { data, error } = await sbClient.from('reviews').select('*').eq('status','publié').order('created_at', {ascending:false});
+  if(error){ console.error(error); return []; }
+  return data;
+}
+async function getAllReviews(){
+  const { data, error } = await sbClient.from('reviews').select('*').order('created_at', {ascending:false});
+  if(error){ console.error(error); return []; }
+  return data;
+}
+async function addReview(r){ return sbClient.from('reviews').insert(r); }
+async function updateReviewStatus(id, status){ return sbClient.from('reviews').update({status}).eq('id', id); }
 
 async function getReservations(){
   const { data, error } = await sbClient.from('reservations').select('*').order('created_at', {ascending:false});
@@ -1031,15 +1047,20 @@ async function renderGallery(){
   });
 }
 
-function renderTestimonials(){
+async function renderTestimonials(){
   const grid = document.getElementById('testi-grid');
-  grid.innerHTML = TESTIMONIALS.map(t=>`
+  const reviews = await getPublishedReviews();
+  if(!reviews.length){
+    grid.innerHTML = `<div class="empty-note" style="grid-column:1/-1;">Sois le premier à laisser un avis !</div>`;
+    return;
+  }
+  grid.innerHTML = reviews.map(t=>`
     <div class="testi-card">
       <div class="testi-stars">${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}</div>
       <p>"${t.text}"</p>
       <div class="testi-who">
-        <div class="testi-avatar">${t.name.charAt(0)}</div>
-        <div><div class="testi-name">${t.name}</div><div class="testi-loc">${t.loc}</div></div>
+        <div class="testi-avatar">${t.name.charAt(0).toUpperCase()}</div>
+        <div><div class="testi-name">${t.name}</div></div>
       </div>
     </div>
   `).join('');
@@ -1061,12 +1082,15 @@ async function renderSettings(){
   const ig = document.getElementById('social-instagram'); if(ig && s.instagram) ig.href = s.instagram;
   const fb = document.getElementById('social-facebook'); if(fb && s.facebook) fb.href = s.facebook;
   const tt = document.getElementById('social-tiktok'); if(tt && s.tiktok) tt.href = s.tiktok;
+  setText('about-title', s.aboutTitle);
+  setText('about-text1', s.aboutText1);
+  setText('about-text2', s.aboutText2);
 }
 
 async function refreshPublicSite(){
   await renderMenu();
   await renderGallery();
-  renderTestimonials();
+  await renderTestimonials();
   await renderSettings();
 }
 
@@ -1133,6 +1157,49 @@ document.querySelectorAll('[data-target]').forEach(el=>{
     }
   });
 });
+document.getElementById('open-review-btn').addEventListener('click', ()=>{
+  openReviewModal();
+});
+
+function openReviewModal(){
+  const modalBg = document.getElementById('modal-bg');
+  document.getElementById('modal-box').innerHTML = `
+    <h3>Laisser un avis</h3>
+    <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:20px;">Ton avis sera visible sur le site après validation par l'équipe.</p>
+    <form id="review-form">
+      <div class="admin-field"><label>Ton nom</label><input type="text" name="name" required></div>
+      <div class="admin-field">
+        <label>Note</label>
+        <select name="rating" required>
+          <option value="5">★★★★★ — Excellent</option>
+          <option value="4">★★★★☆ — Très bien</option>
+          <option value="3">★★★☆☆ — Correct</option>
+          <option value="2">★★☆☆☆ — Décevant</option>
+          <option value="1">★☆☆☆☆ — Mauvais</option>
+        </select>
+      </div>
+      <div class="admin-field"><label>Ton avis</label><textarea name="text" rows="3" required></textarea></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" style="border-color:var(--line);color:var(--ink)" id="review-cancel">Annuler</button>
+        <button type="submit" class="btn btn-gold">Envoyer</button>
+      </div>
+    </form>
+    <div class="form-msg" id="review-msg"></div>
+  `;
+  modalBg.classList.add('open');
+  document.getElementById('review-cancel').addEventListener('click', ()=>modalBg.classList.remove('open'));
+  document.getElementById('review-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const { error } = await addReview({ name: data.name, rating: parseInt(data.rating,10), text: data.text, status: 'en attente' });
+    const msg = document.getElementById('review-msg');
+    if(error){ msg.className='form-msg err'; msg.textContent = 'Erreur : ' + error.message; return; }
+    msg.className='form-msg ok';
+    msg.textContent = 'Merci ! Ton avis a bien été envoyé et sera publié après validation.';
+    e.target.reset();
+  });
+}
+
 document.getElementById('cancel-res-link').addEventListener('click', (e)=>{
   e.preventDefault();
   openCancelReservationModal();
@@ -1560,6 +1627,7 @@ async function renderAdminView(){
   if(adminView === 'reservations') return renderAdminReservations(main);
   if(adminView === 'gallery') return renderAdminGallery(main);
   if(adminView === 'messages') return renderAdminMessages(main);
+  if(adminView === 'reviews') return renderAdminReviews(main);
   if(adminView === 'settings') return renderAdminSettings(main);
   if(adminView === 'account') return renderAdminAccount(main);
 }
@@ -1870,10 +1938,68 @@ async function renderAdminAccount(main){
 }
 
 /* ---- Admin: Settings (address, phone, email, hours, social, map) ---- */
+/* ---- Admin: Reviews moderation ---- */
+let adminReviewFilter = 'en attente';
+async function renderAdminReviews(main){
+  let list = await getAllReviews();
+  if(adminReviewFilter !== 'toutes') list = list.filter(r => r.status === adminReviewFilter);
+  main.innerHTML = `
+    <div class="admin-topbar"><h2>Avis clients</h2></div>
+    <div class="admin-toolbar">
+      <div class="tabs" id="review-filters">
+        ${['toutes','en attente','publié','refusé'].map(s=>`<button class="${adminReviewFilter===s?'active':''}" data-f="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
+      </div>
+    </div>
+    <div class="admin-panel-box">
+      <table>
+        <tr><th>Nom</th><th>Note</th><th>Avis</th><th>Statut</th><th></th></tr>
+        ${list.length ? list.map(r=>`
+          <tr>
+            <td>${r.name}</td>
+            <td>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</td>
+            <td style="max-width:280px;">${r.text}</td>
+            <td><span class="badge ${r.status==='publié'?'confirmed':(r.status==='refusé'?'cancelled':'pending')}">${r.status}</span></td>
+            <td>
+              ${r.status!=='publié' ? `<button class="icon-btn" data-approve="${r.id}">Publier</button>` : ''}
+              ${r.status!=='refusé' ? `<button class="icon-btn danger" data-reject="${r.id}">Refuser</button>` : ''}
+            </td>
+          </tr>
+        `).join('') : `<tr><td colspan="5"><div class="empty-state">Aucun avis ${adminReviewFilter!=='toutes'?'avec ce statut':''}.</div></td></tr>`}
+      </table>
+    </div>
+  `;
+  document.getElementById('review-filters').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-f]'); if(!btn) return;
+    adminReviewFilter = btn.dataset.f;
+    renderAdminReviews(main);
+  });
+  main.querySelectorAll('[data-approve]').forEach(b=>b.addEventListener('click', async ()=>{
+    await updateReviewStatus(b.dataset.approve, 'publié');
+    showToast('Avis publié');
+    renderAdminReviews(main);
+  }));
+  main.querySelectorAll('[data-reject]').forEach(b=>b.addEventListener('click', async ()=>{
+    await updateReviewStatus(b.dataset.reject, 'refusé');
+    showToast('Avis refusé');
+    renderAdminReviews(main);
+  }));
+}
+
 async function renderAdminSettings(main){
   const s = await getSettings();
   main.innerHTML = `
     <div class="admin-topbar"><h2>Paramètres du site</h2></div>
+    <div class="admin-panel-box">
+      <h3>Notre histoire (section "À propos")</h3>
+      <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:22px;">Écris ici la vraie histoire de Dar El Kahwa — ce texte remplace directement celui affiché sur le site public.</p>
+      <form id="about-form">
+        <div class="admin-field"><label>Titre</label><input type="text" name="aboutTitle" value="${s.aboutTitle||''}" placeholder="Ex. Une maison de café, pas un passage"></div>
+        <div class="admin-field"><label>Premier paragraphe</label><textarea name="aboutText1" rows="3" placeholder="L'histoire, l'origine du nom, l'idée de départ…">${s.aboutText1||''}</textarea></div>
+        <div class="admin-field"><label>Deuxième paragraphe</label><textarea name="aboutText2" rows="3" placeholder="L'ambiance, ce qui rend le café unique…">${s.aboutText2||''}</textarea></div>
+        <button type="submit" class="btn btn-gold">Enregistrer l'histoire</button>
+        <div class="form-msg" id="about-msg"></div>
+      </form>
+    </div>
     <div class="admin-panel-box">
       <h3>Coordonnées & localisation</h3>
       <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:22px;">Ces informations s'affichent dans la section Contact et le pied de page du site public — toute modification est immédiate.</p>
@@ -1895,10 +2021,21 @@ async function renderAdminSettings(main){
       </form>
     </div>
   `;
+  document.getElementById('about-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const { error } = await updateSettings({ ...s, ...data });
+    const msg = document.getElementById('about-msg');
+    if(error){ msg.className = 'form-msg err'; msg.textContent = 'Erreur : ' + error.message; return; }
+    await renderSettings();
+    msg.className = 'form-msg ok';
+    msg.textContent = "Histoire mise à jour — visible sur le site public.";
+    showToast('Histoire mise à jour');
+  });
   document.getElementById('settings-form').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
-    const { error } = await updateSettings(data);
+    const { error } = await updateSettings({ ...s, ...data });
     const msg = document.getElementById('settings-msg');
     if(error){
       msg.className = 'form-msg err';
