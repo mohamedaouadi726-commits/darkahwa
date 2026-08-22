@@ -1353,7 +1353,7 @@ async function openCustomerDashboardModal(customer){
   if(customer.email) orParts.push(`email.eq.${customer.email}`);
   if(customer.phone) orParts.push(`phone.eq.${customer.phone}`);
   const { data: myReservations } = await sbClient.from('reservations').select('*').or(orParts.join(',')).order('created_at', {ascending:false});
-  const list = (myReservations || []).filter(r => r.status !== 'annulée');
+  const list = (myReservations || []).filter(r => !isReservationStale(r));
 
   document.getElementById('modal-box').innerHTML = `
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
@@ -1549,7 +1549,7 @@ function observeReveals(){
    ================================================================== */
 let adminLoggedIn = false;
 let adminView = 'dashboard';
-let adminReservationFilter = 'toutes';
+let adminReservationFilter = 'actives';
 let adminMessageFilter = 'tous';
 
 function setRoute(){
@@ -1695,6 +1695,15 @@ function statusClass(s){
   if(s==='expirée') return 'expired';
   return 'pending';
 }
+function isReservationStale(r){
+  if(r.status === 'annulée') return true;
+  if(computeDisplayStatus(r) === 'expirée') return true;
+  try{
+    const todayStr = new Date().toISOString().slice(0,10);
+    if(r.date && r.date < todayStr) return true;
+  }catch(e){}
+  return false;
+}
 
 /* ---- Admin: Menu CRUD ---- */
 async function renderAdminMenu(main){
@@ -1789,17 +1798,20 @@ function openMenuModal(item){
 /* ---- Admin: Reservations ---- */
 async function renderAdminReservations(main){
   let list = await getReservations();
-  if(adminReservationFilter !== 'toutes'){
+  if(adminReservationFilter === 'actives'){
+    list = list.filter(r => !isReservationStale(r));
+  } else if(adminReservationFilter !== 'toutes'){
     list = list.filter(r => adminReservationFilter === 'expirée' ? computeDisplayStatus(r)==='expirée' : r.status===adminReservationFilter);
   }
   main.innerHTML = `
     <div class="admin-topbar"><h2>Réservations</h2></div>
     <div class="admin-toolbar">
       <div class="tabs" id="res-filters">
-        ${['toutes','en attente','confirmée','expirée','annulée'].map(s=>`<button class="${adminReservationFilter===s?'active':''}" data-f="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
+        ${['actives','en attente','confirmée','expirée','annulée','toutes'].map(s=>`<button class="${adminReservationFilter===s?'active':''}" data-f="${s}">${s==='actives'?'Actives':(s.charAt(0).toUpperCase()+s.slice(1))}</button>`).join('')}
       </div>
     </div>
     <div class="admin-panel-box">
+      <p style="color:var(--ink-soft);font-size:0.85rem;margin-bottom:16px;">"Actives" cache automatiquement les réservations annulées, expirées (15 min après l'heure) ou dont la date est déjà passée. Utilise "Toutes" pour retrouver l'historique complet.</p>
       <table>
         <tr><th>Nom</th><th>Téléphone</th><th>Date</th><th>Heure</th><th>Pers.</th><th>Note</th><th>Statut</th><th></th></tr>
         ${list.length ? list.map(r=>`
@@ -1815,7 +1827,7 @@ async function renderAdminReservations(main){
               </select>
             </td>
           </tr>
-        `).join('') : `<tr><td colspan="8"><div class="empty-state">Aucune réservation ${adminReservationFilter!=='toutes'?'avec ce statut':''}.</div></td></tr>`}
+        `).join('') : `<tr><td colspan="8"><div class="empty-state">Aucune réservation ${adminReservationFilter!=='toutes'?'dans cette vue':''}.</div></td></tr>`}
       </table>
     </div>
   `;
